@@ -1,0 +1,63 @@
+# Django-specific files
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.sqlite3
+*.log
+
+# Environment variables
+.env
+*.env
+
+# Virtual environment
+venv/
+env/
+
+# macOS-specific files
+.DS_Store
+
+# IDE-specific files
+.idea/
+.vscode/
+*.swp
+
+# Coverage reports
+htmlcov/
+.coverage
+*.cover
+*.coverage.*
+
+# Testing
+.pytest_cache/
+nosetests.xml
+coverage.xml
+*.spec
+
+# Static files
+staticfiles/
+static/
+
+# Media files
+media/
+
+# Node modules (if using Node.js)
+node_modules/
+
+# Package archives
+*.egg-info/
+*.egg
+*.whl
+
+# Deployment files
+*.pot
+*.mo
+*.po
+*.pid
+
+# Backup files
+*.bak
+*.backup
+
+# Other system files
+Thumbs.db
