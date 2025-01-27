@@ -14,6 +14,7 @@ __pycache__/
 venv/
 env/
 
+
 # macOS-specific files
 .DS_Store
 
@@ -61,3 +62,6 @@ node_modules/
 
 # Other system files
 Thumbs.db
+
+#migrations
+*migrations/
