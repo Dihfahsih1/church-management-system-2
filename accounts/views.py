@@ -1,8 +1,105 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Account, Income, Expenditure
-from .serializers import AccountSerializer, IncomeSerializer, ExpenditureSerializer
+from .models import Account, Income, Expenditure,IncomeCategory, ExpenditureCategory
+from .serializers import AccountSerializer, IncomeSerializer, ExpenditureSerializer, \
+                        IncomeCategorySerializer, ExpenditureCategorySerializer
+
+ 
+######### INCOME CATEGORY ##########
+
+# Create Income Category
+@api_view(["POST"])
+def create_income_category(request):
+    serializer = IncomeCategorySerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+# Retrieve Income Category
+@api_view(["POST"])
+def retrieve_income_category(request):
+    category_id = request.data.get("id")
+    try:
+        category = IncomeCategory.objects.get(id=category_id)
+        serializer = IncomeCategorySerializer(category)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    except IncomeCategory.DoesNotExist:
+        return Response({"error": "Income Category not found."}, status=status.HTTP_404_NOT_FOUND)
+
+# Update Income Category
+@api_view(["POST"])
+def update_income_category(request):
+    category_id = request.data.get("id")
+    try:
+        category = IncomeCategory.objects.get(id=category_id)
+        serializer = IncomeCategorySerializer(category, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    except IncomeCategory.DoesNotExist:
+        return Response({"error": "Income Category not found."}, status=status.HTTP_404_NOT_FOUND)
+
+# Delete Income Category
+@api_view(["POST"])
+def delete_income_category(request):
+    category_id = request.data.get("id")
+    try:
+        category = IncomeCategory.objects.get(id=category_id)
+        category.delete()
+        return Response({"message": "Income Category deleted successfully."}, status=status.HTTP_200_OK)
+    except IncomeCategory.DoesNotExist:
+        return Response({"error": "Income Category not found."}, status=status.HTTP_404_NOT_FOUND)
+
+
+######### EXPENDITURE CATEGORY ##########
+
+# Create Expenditure Category
+@api_view(["POST"])
+def create_expenditure_category(request):
+    serializer = ExpenditureCategorySerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+# Retrieve Expenditure Category
+@api_view(["POST"])
+def retrieve_expenditure_category(request):
+    category_id = request.data.get("id")
+    try:
+        category = ExpenditureCategory.objects.get(id=category_id)
+        serializer = ExpenditureCategorySerializer(category)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    except ExpenditureCategory.DoesNotExist:
+        return Response({"error": "Expenditure Category not found."}, status=status.HTTP_404_NOT_FOUND)
+
+# Update Expenditure Category
+@api_view(["POST"])
+def update_expenditure_category(request):
+    category_id = request.data.get("id")
+    try:
+        category = ExpenditureCategory.objects.get(id=category_id)
+        serializer = ExpenditureCategorySerializer(category, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    except ExpenditureCategory.DoesNotExist:
+        return Response({"error": "Expenditure Category not found."}, status=status.HTTP_404_NOT_FOUND)
+
+# Delete Expenditure Category
+@api_view(["POST"])
+def delete_expenditure_category(request):
+    category_id = request.data.get("id")
+    try:
+        category = ExpenditureCategory.objects.get(id=category_id)
+        category.delete()
+        return Response({"message": "Expenditure Category deleted successfully."}, status=status.HTTP_200_OK)
+    except ExpenditureCategory.DoesNotExist:
+        return Response({"error": "Expenditure Category not found."}, status=status.HTTP_404_NOT_FOUND)
 
 #########  ACCOUNTS  ##########
 @api_view(["POST"])
