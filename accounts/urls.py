@@ -4,6 +4,7 @@ from .views import create_account, retrieve_account, update_account, delete_acco
                     create_expenditure,retrieve_expenditure,update_expenditure,delete_expenditure
 
 urlpatterns = [
+    
     path("accounts/create/", create_account, name="create_account"),
     path("accounts/retrieve/", retrieve_account, name="retrieve_account"),
     path("accounts/update/", update_account, name="update_account"),
