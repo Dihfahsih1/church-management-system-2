@@ -91,7 +91,21 @@ USE_TZ = True
 
  
 
-STATIC_URL = 'static/'
- 
+# URL to use when referring to static files
+STATIC_URL = '/static/'
+
+# Directory where static files are stored, typically under your project directory
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',  # for local static files
+]
+
+# Directory where collected static files will be stored for production (useful for `collectstatic` command)
+STATIC_ROOT = BASE_DIR / 'staticfiles'  # For production, after running `python manage.py collectstatic`
+
+# URL to use when referring to media files (uploads)
+MEDIA_URL = '/media/'
+
+# Directory where media files are stored (uploads from users, for example)
+MEDIA_ROOT = BASE_DIR / 'media'  # Path where uploaded files will be stored
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

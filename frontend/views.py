@@ -6,4 +6,4 @@ def dashboard(request):
     response = requests.get(api_url)
     accounts = response.json() if response.status_code == 200 else []
 
-    return render(request, "frontend/dashboard.html", {"accounts": accounts})
+    return render(request, "dashboard.html", {"accounts": accounts})
