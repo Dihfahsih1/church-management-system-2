@@ -1,10 +1,9 @@
 from django.urls import path
-from .views import create_account, retrieve_account, update_account, delete_account,\
+from .views import  create_account, retrieve_account, update_account, delete_account,\
                     create_income, retrieve_income, update_income, delete_income,\
                     create_expenditure,retrieve_expenditure,update_expenditure,delete_expenditure, \
-    create_income_category, retrieve_income_category, update_income_category, delete_income_category, \
-    create_expenditure_category, retrieve_expenditure_category, update_expenditure_category, delete_expenditure_category
-)
+                    create_income_category, retrieve_income_category, update_income_category, delete_income_category, \
+                    create_expenditure_category, retrieve_expenditure_category, update_expenditure_category, delete_expenditure_category
 
 urlpatterns = [
     
