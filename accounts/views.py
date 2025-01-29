@@ -1,8 +1,8 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Account, Income, Expenditure,IncomeCategory, ExpenditureCategory
-from .serializers import AccountSerializer, IncomeSerializer, ExpenditureSerializer, \
+from .models import Account, AccountType, Income, Expenditure,IncomeCategory, ExpenditureCategory
+from .serializers import AccountSerializer, AccountTypeSerializer, IncomeSerializer, ExpenditureSerializer, \
                         IncomeCategorySerializer, ExpenditureCategorySerializer
 
  
@@ -101,6 +101,70 @@ def delete_expenditure_category(request):
     except ExpenditureCategory.DoesNotExist:
         return Response({"error": "Expenditure Category not found."}, status=status.HTTP_404_NOT_FOUND)
 
+#########  ACCOUNT TYPES  ##########
+@api_view(["POST"])
+def create_account_type(request):
+    if request.method == 'POST':
+        # Check if the request contains a list of account types
+        if isinstance(request.data, list):
+            # Serialize the list of account types
+            serializer = AccountTypeSerializer(data=request.data, many=True)
+            if serializer.is_valid():
+                serializer.save()  # Save multiple account types at once
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        # If it's a single account type (not a list)
+        serializer = AccountTypeSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()  # Save single account type
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+#List of account types
+@api_view(['POST'])
+def list_account_types(request): 
+    account_types = AccountType.objects.all() 
+    serializer = AccountTypeSerializer(account_types, many=True) 
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+# Retrieve Account Type
+@api_view(["POST"])
+def retrieve_account_type(request):
+    account_id = request.data.get("id")
+    try:
+        account = AccountType.objects.get(id=account_id)
+        serializer = AccountTypeSerializer(account)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    except AccountType.DoesNotExist:
+        return Response({"error": "Account not found."}, status=status.HTTP_404_NOT_FOUND)
+
+# Update Accounttype
+@api_view(["POST"])
+def update_account_type(request):
+    account_id = request.data.get("id")
+    try:
+        account = AccountType.objects.get(id=account_id)
+        serializer = AccountTypeSerializer(account, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    except AccountType.DoesNotExist:
+        return Response({"error": "Account not found."}, status=status.HTTP_404_NOT_FOUND)
+
+# Delete Account Type
+@api_view(["POST"])
+def delete_account_type(request):
+    account_id = request.data.get("id")
+    try:
+        account = AccountType.objects.get(id=account_id)
+        account.delete()
+        return Response({"message": "Account Type deleted successfully."}, status=status.HTTP_200_OK)
+    except AccountType.DoesNotExist:
+        return Response({"error": "Account not found."}, status=status.HTTP_404_NOT_FOUND)
+
+
 #########  ACCOUNTS  ##########
 @api_view(["POST"])
 def create_account(request):
@@ -145,6 +209,7 @@ def delete_account(request):
         return Response({"message": "Account deleted successfully."}, status=status.HTTP_200_OK)
     except Account.DoesNotExist:
         return Response({"error": "Account not found."}, status=status.HTTP_404_NOT_FOUND)
+
 
 
 ######### INCOMES ##########

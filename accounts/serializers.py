@@ -1,5 +1,11 @@
 from rest_framework import serializers
-from .models import Account, Expenditure, Income, IncomeCategory, ExpenditureCategory
+from .models import Account, Expenditure, Income, IncomeCategory, ExpenditureCategory,AccountType
+
+
+class AccountTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AccountType
+        fields = "__all__"
 
 class AccountSerializer(serializers.ModelSerializer):
     class Meta:
