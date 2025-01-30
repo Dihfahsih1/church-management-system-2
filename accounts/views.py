@@ -174,6 +174,13 @@ def create_account(request):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+#List of account types
+@api_view(['GET'])
+def list_accounts(request): 
+    account_types = Account.objects.all().order_by('-id')
+    serializer = AccountSerializer(account_types, many=True) 
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
 # Retrieve Account
 @api_view(["POST"])
 def retrieve_account(request):

@@ -16,3 +16,6 @@ def dashboard(request):
 
 def create_account_type_form(request):
     return render(request, "Accounts/create_account_type.html")
+
+def create_account_form(request):
+    return render(request, "Accounts/create_account_form.html")

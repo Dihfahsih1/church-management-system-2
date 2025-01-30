@@ -72,10 +72,13 @@
 		   let table = document.getElementById(tableID);
 		   let clonedTable = table.cloneNode(true);
    
-		   // Remove the last column (Actions)
+		   // Remove the last column (Actions) if it exists
 			let rows = clonedTable.rows;
 			for (let i = 0; i < rows.length; i++) {
-				rows[i].deleteCell(rows[i].cells.length - 1); // Removes last column
+				// Check if the last column is the "Actions" column
+				if (rows[i].cells.length > 1) {
+					rows[i].deleteCell(rows[i].cells.length - 1); // Removes last column (Actions)
+				}
 			}
    
 		   // Convert table to worksheet
