@@ -1,7 +1,17 @@
-{% extends "base.html" %}
+{% extends "includes/base.html" %}
+{% block title %}UCC Bwaise - Account Types{% endblock %}
 
 {% block content %}
-
+<style>
+    .export-icon {
+        cursor: pointer;
+        color: #198754; /* Green Excel-like color */
+        font-size: 1.5rem;
+    }
+    .export-icon:hover {
+        color: #145c32; /* Darker green */
+    }
+</style>
 <div class="main-panel">
     <div class="content">
         <div class="container mt-3">
@@ -35,23 +45,28 @@
 
                 <!-- Right Column: Table -->
                 <div class="col-md-6">
+                    
                     <div class="card shadow-sm border-0 rounded">
                         <div class="card-header bg-primary text-white text-center">
                             <h5 class="mb-0">Account Types</h5>
+                            
                         </div>
                         <div class="card-body">
+                            <!-- Export Icon Inside Table Header -->
+                            <i class="fa fa-file-excel export-icon" onclick="exportToExcel('accountTypesTable', 'Users')" title="Export to Excel"></i>
                             <table id="accountTypesTable" class="table table-striped table-bordered">
                                 <thead class="table-striped">
                                     <tr> 
                                         <th>Name</th> 
                                         <th>Description</th> 
-                                        <th>Actions</th>
+                                        <th>Actions</th> 
                                     </tr>
                                 </thead>
                                 <tbody id="accountTypeTableBody">
                                     <!-- Account types will be loaded here -->
                                 </tbody>
                             </table>
+                            
                         </div>
                     </div>
                 </div>

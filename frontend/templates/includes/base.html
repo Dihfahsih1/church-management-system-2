@@ -3,48 +3,42 @@
 <head>
     {% load static %}
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-	<title>UCC BWAISE System</title>
+	<title>{% block title %}UCC BWAISE System{% endblock %}</title>
 	<meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no' name='viewport' />
 	<!-- Link static CSS files -->
 	<link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i">
 	<link rel="stylesheet" href="{% static 'css/ready.css' %}">
-	<link rel="stylesheet" href="{% static 'css/demo.css' %}">
-    <!-- DataTables CSS -->
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
-<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css">
+    
+		<!-- DataTables CSS -->
+	<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+	<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css">
+	<!-- FontAwesome for Icons -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+		
 
-<!-- jQuery -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-<!-- DataTables JS -->
-<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
-
-<!-- JSZip for Excel Export -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 </head>
 <body>
 	<div class="wrapper">
 		<div class="main-header">
 			<div class="logo-header">
 				<a href="index.html" class="logo">
-					CMIM
+					<link rel="stylesheet" href="https://cdn.datatables.net/">
 				</a>
 				<button class="navbar-toggler sidenav-toggler ml-auto" type="button" data-toggle="collapse" data-target="collapse" aria-controls="sidebar" aria-expanded="false" aria-label="Toggle navigation">
 					<span class="navbar-toggler-icon"></span>
 				</button>
 				<button class="topbar-toggler more"><i class="la la-ellipsis-v"></i></button>
 			</div>
-			{% include "nav.html" %}
+			{% include "includes/nav.html" %}
 		</div>
-		{% include "aside.html" %}
+		{% include "includes/aside.html" %}
 		{% block content %}
 		<!-- Page content will be injected here -->
 		{% endblock %}
 
-        {% include "footer.html" %}
+        {% include "includes/footer.html" %}
 	</div>
 
 	<!-- Modal -->
@@ -70,6 +64,35 @@
 	</div>
 
 	<!-- Link static JS files -->
+	 	<!-- XLSX Library for Export -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+
+	<script>
+	   function exportToExcel(tableID, sheetName) {
+		   let table = document.getElementById(tableID);
+		   let clonedTable = table.cloneNode(true);
+   
+		   // Remove the last column (Actions)
+			let rows = clonedTable.rows;
+			for (let i = 0; i < rows.length; i++) {
+				rows[i].deleteCell(rows[i].cells.length - 1); // Removes last column
+			}
+   
+		   // Convert table to worksheet
+		   let wb = XLSX.utils.book_new();
+		   let ws = XLSX.utils.table_to_sheet(clonedTable);
+		   XLSX.utils.book_append_sheet(wb, ws, sheetName);
+   
+		   // Generate filename with title + date
+		   let pageTitle = document.title.replace(/\s+/g, '-'); // Remove spaces
+		   let today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
+		   let filename = `${pageTitle}-${today}.xlsx`;
+   
+		   // Export file
+		   XLSX.writeFile(wb, filename);
+	   }
+   </script>
+
 	<script src="{% static 'js/core/jquery.3.2.1.min.js' %}"></script>
 	<script src="{% static 'js/plugin/jquery-ui-1.12.1.custom/jquery-ui.min.js' %}"></script>
 	<script src="{% static 'js/core/popper.min.js' %}"></script>
@@ -84,5 +107,16 @@
 	<script src="{% static 'js/plugin/jquery-scrollbar/jquery.scrollbar.min.js' %}"></script>
 	<script src="{% static 'js/ready.min.js' %}"></script>
 	<script src="{% static 'js/demo.js' %}"></script>
-</body>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- DataTables JS -->
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+
+    <!-- JSZip for Excel Export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    </body>
 </html>
