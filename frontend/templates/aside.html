@@ -36,13 +36,31 @@
             </div>
         </div>
         <ul class="nav">
-            <li class="nav-item active">
-                <a href="index.html">
+            <li class="nav-item "> 
+
+                <a href="{% url 'dashboard' %}">
                     <i class="la la-dashboard"></i>
-                    <p>Dashboard</p>
-                    <span class="badge badge-count">5</span>
+                    <span>Dashboard</span>
                 </a>
             </li>
+            <li class="nav-item">
+                <a data-toggle="collapse" href="#accountsMenu">
+                    <i class="la la-users"></i>
+                    <p>Accounts</p>
+                    <span class="caret"></span>
+                </a>
+                <div class="collapse" id="accountsMenu">
+                    <ul class="nav">
+                        <li>
+                            <a href="{% url 'create_account_type_form' %}">
+                                <i class="la la-plus-circle"></i>
+                                <span>Create Account Type</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+            
             <li class="nav-item">
                 <a href="components.html">
                     <i class="la la-table"></i>
@@ -87,7 +105,7 @@
             <li class="nav-item update-pro">
                 <button  data-toggle="modal" data-target="#modalUpdate">
                     <i class="la la-hand-pointer-o"></i>
-                    <p>Update To Pro</p>
+                    <p>Being Accountable</p>
                 </button>
             </li>
         </ul>

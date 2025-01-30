@@ -122,9 +122,9 @@ def create_account_type(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 #List of account types
-@api_view(['POST'])
+@api_view(['GET'])
 def list_account_types(request): 
-    account_types = AccountType.objects.all() 
+    account_types = AccountType.objects.all().order_by('-id')
     serializer = AccountTypeSerializer(account_types, many=True) 
     return Response(serializer.data, status=status.HTTP_200_OK)
 
