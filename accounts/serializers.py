@@ -14,6 +14,20 @@ class AccountSerializer(serializers.ModelSerializer):
         model = Account
         fields = "__all__"
 
+class AccountReadSerializer(serializers.ModelSerializer):
+    account_type = AccountTypeSerializer()
+
+    class Meta:
+        model = Account
+        fields = "__all__"
+
+class AccountWriteSerializer(serializers.ModelSerializer):
+    account_type = serializers.PrimaryKeyRelatedField(queryset=AccountType.objects.all())
+
+    class Meta:
+        model = Account
+        fields = "__all__"
+
 
 class IncomeCategorySerializer(serializers.ModelSerializer):
     class Meta:

@@ -2,7 +2,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Account, AccountType, Income, Expenditure,IncomeCategory, ExpenditureCategory
-from .serializers import AccountSerializer, AccountTypeSerializer, IncomeSerializer, ExpenditureSerializer, \
+from .serializers import AccountReadSerializer, AccountSerializer, AccountTypeSerializer, AccountWriteSerializer, IncomeSerializer, ExpenditureSerializer, \
                         IncomeCategorySerializer, ExpenditureCategorySerializer
 
  
@@ -166,20 +166,19 @@ def delete_account_type(request):
 
 
 #########  ACCOUNTS  ##########
-@api_view(["POST"])
-def create_account(request):
-    serializer = AccountSerializer(data=request.data)
-    if serializer.is_valid():
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-#List of account types
-@api_view(['GET'])
-def list_accounts(request): 
-    account_types = Account.objects.all().order_by('-id')
-    serializer = AccountSerializer(account_types, many=True) 
-    return Response(serializer.data, status=status.HTTP_200_OK)
+@api_view(['GET', 'POST'])
+def list_or_create_accounts(request): 
+    if request.method == 'GET':
+        accounts = Account.objects.all().order_by('-id')
+        serializer = AccountReadSerializer(accounts, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    elif request.method == 'POST':
+        serializer = AccountWriteSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # Retrieve Account
 @api_view(["POST"])
@@ -188,7 +187,7 @@ def retrieve_account(request):
     try:
         account = Account.objects.get(id=account_id)
         serializer = AccountSerializer(account)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.data)
     except Account.DoesNotExist:
         return Response({"error": "Account not found."}, status=status.HTTP_404_NOT_FOUND)
 
