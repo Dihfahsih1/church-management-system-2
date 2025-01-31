@@ -1,0 +1,194 @@
+{% extends "includes/base.html" %}
+{% block title %}UCC Bwaise - Categories{% endblock %}
+
+{% block content %}
+<style>
+    .export-icon {
+        cursor: pointer;
+        color: #198754; /* Green Excel-like color */
+        font-size: 1.5rem;
+    }
+    .export-icon:hover {
+        color: #145c32; /* Darker green */
+    }
+</style>
+
+<div class="main-panel">
+    <div class="content">
+        <div class="container mt-3">
+            <div class="row">
+                
+                <!-- Left Column: Form -->
+                <div class="col-md-5">
+                    <div class="card shadow-sm border-0 rounded">
+                        <div class="card-header bg-primary text-white text-center">
+                            <h5 class="mb-0">Create Income Category</h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="categoryForm">
+                                {% csrf_token %}
+                                <div class="mb-3">
+                                    <!-- <label for="name" class="form-label">Account Name</label> -->
+                                    <input type="text" class="form-control" id="name" placeholder="Enter Category Name" required>
+                                </div>
+                                <div class="mb-3">
+                                    <!-- <label for="account" class="form-label">Category/label> -->
+                                    <select class="form-select form-control" id="account" required>
+                                        <option value="">Select Account</option>
+                                        <!-- Options will be populated by JS -->
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <!-- <label for="description" class="form-label">Description</label> -->
+                                    <input type="text" class="form-control" id="description" placeholder="Enter Account Narration" required>
+                                </div>
+                                
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="btn btn-success">Submit</button>
+                                     
+                                </div>
+                            </form>
+                            <div id="responseMessage" class="mt-3"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Table -->
+                <div class="col-md-7">
+                    <div class="card shadow-sm border-0 rounded">
+                        <div class="card-header bg-primary text-white text-center">
+                            <h5 class="mb-0">Categories</h5>
+                        </div>
+                        <div class="card-body">
+                            <!-- Export Icon Inside Table Header -->
+                            <i class="fa fa-file-excel export-icon" onclick="exportToExcel('accountsTable', 'categories')" title="Export to Excel"></i>
+                            <table id="accountsTable" class="table table-striped table-bordered">
+                                <thead class="table-striped">
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Category</th> 
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="CategoriesTableBody">
+                                    <!-- Accounts will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Function to fetch accounts and populate select field
+function loadAccount() {
+    fetch('http://127.0.0.1:8000/api/accounts/list/')
+    .then(response => response.json())
+    .then(data => {
+        let selectField = document.getElementById('account');
+        data.forEach(account => {
+            let option = document.createElement('option');
+            option.value = account.id;
+            option.textContent = account.name;
+            selectField.appendChild(option);
+        });
+    })
+    .catch(error => console.error('Error loading accounts:', error));
+}
+
+// Function to fetch Categories and populate table
+function loadCategories() {
+    fetch('http://127.0.0.1:8000/api/income-category/list/')
+    .then(response => response.json())
+    .then(data => {
+        let tableBody = document.getElementById('CategoriesTableBody');
+        tableBody.innerHTML = ''; // Clear existing table rows
+        data.forEach(catgory => {
+            let account = catgory.account ? account.account.name : 'N/A'; // Check if account exists
+
+            let row = 
+                `<tr>
+                    <td>${catgory.name}</td>
+                    <td>${account}</td>   
+                    <td>${account.opening_balance}</td>
+                    <td>
+                        <button class="btn btn-warning btn-sm" onclick="deleteCategory(${catgory.id}, '${catgory.name}', '${catgory.account.id}', '${catgory.description}'})">
+                            <i class="la la-pencil"></i>
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteCategory(${catgory.id})">
+                            <i class="la la-trash"></i>
+                        </button>
+                    </td>
+                </tr>`;
+            tableBody.innerHTML += row;
+        });
+    })
+    .catch(error => console.error('Error loading accounts:', error));
+}
+
+// Handle form submission
+document.getElementById('categoryForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    let name = document.getElementById('name').value;
+    let account = document.getElementById('account').value;
+    let description = document.getElementById('description').value; 
+    let csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    fetch('http://127.0.0.1:8000/api/income-category/create/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken
+        },
+        body: JSON.stringify({ name, account, description})
+    })
+    .then(response => response.json())
+    .then(data => {
+        let messageDiv = document.getElementById('responseMessage');
+        if (data.id) {
+            messageDiv.innerHTML = '<div class="alert alert-success">Category Created Successfully!</div>';
+            document.getElementById('categoryForm').reset();
+            loadAccounts(); // Reload table
+        } else {
+            messageDiv.innerHTML = '<div class="alert alert-danger">Error: ' + JSON.stringify(data) + '</div>';
+        }
+    })
+    .catch(error => console.error('Error:', error));
+});
+
+
+
+// Delete function
+function deleteAccount(id) {
+    if (!confirm("Are you sure you want to delete this category?")) return;
+
+    let csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    fetch(`http://127.0.0.1:8000/api/income-category/delete/${id}/`, {
+        method: 'DELETE',
+        headers: {
+            'X-CSRFToken': csrfToken
+        }
+    })
+    .then(response => {
+        if (response.ok) {
+            document.getElementById('responseMessage').innerHTML = '<div class="alert alert-success">Category Deleted Successfully!</div>';
+            loadAccounts(); // Reload table
+        } else {
+            document.getElementById('responseMessage').innerHTML = '<div class="alert alert-danger">Error deleting Category.</div>';
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+// Load account types and accounts on page load
+document.addEventListener('DOMContentLoaded', function() {
+    loadCategories();
+    loadAccounts();
+});
+</script>
+{% endblock %}
