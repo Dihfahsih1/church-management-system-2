@@ -9,6 +9,7 @@ class AccountTypeSerializer(serializers.ModelSerializer):
 
 class AccountSerializer(serializers.ModelSerializer):
     account_type = AccountTypeSerializer()
+
     class Meta:
         model = Account
         fields = "__all__"

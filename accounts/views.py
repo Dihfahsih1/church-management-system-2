@@ -192,19 +192,28 @@ def retrieve_account(request):
     except Account.DoesNotExist:
         return Response({"error": "Account not found."}, status=status.HTTP_404_NOT_FOUND)
 
-# Update Account
 @api_view(["POST"])
 def update_account(request):
-    account_id = request.data.get("id")
+    account_id = request.data.get("id")   
+    
+    if not account_id:
+        return Response({"error": "Account ID is required."}, status=status.HTTP_400_BAD_REQUEST)
+    
     try:
         account = Account.objects.get(id=account_id)
         serializer = AccountSerializer(account, data=request.data, partial=True)
+
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": "Account updated successfully.", "data": serializer.data}, status=status.HTTP_200_OK)
+
+        return Response({"error": "Invalid data.", "details": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
     except Account.DoesNotExist:
         return Response({"error": "Account not found."}, status=status.HTTP_404_NOT_FOUND)
+
+    except Exception as e:
+        return Response({"error": "An unexpected error occurred.", "details": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 # Delete Account
 @api_view(["POST"])

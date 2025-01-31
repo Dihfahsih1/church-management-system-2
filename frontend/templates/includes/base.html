@@ -61,8 +61,11 @@
 				</div>
 			</div>
 		</div>
-	</div> 
+	</div>
 
+	<!-- Link static JS files -->
+	 	<!-- XLSX Library for Export -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
 
 	<script>
 	   function exportToExcel(tableID, sheetName) {
@@ -92,7 +95,9 @@
 		   XLSX.writeFile(wb, filename);
 	   }
    </script>
- 
+
+	<script src="{% static 'js/core/jquery.3.2.1.min.js' %}"></script>
+	<script src="{% static 'js/plugin/jquery-ui-1.12.1.custom/jquery-ui.min.js' %}"></script>
 	<script src="{% static 'js/core/popper.min.js' %}"></script>
 	<script src="{% static 'js/core/bootstrap.min.js' %}"></script>
 	<script src="{% static 'js/plugin/chartist/chartist.min.js' %}"></script>
@@ -105,14 +110,10 @@
 	<script src="{% static 'js/plugin/jquery-scrollbar/jquery.scrollbar.min.js' %}"></script>
 	<script src="{% static 'js/ready.min.js' %}"></script>
 	<script src="{% static 'js/demo.js' %}"></script>
- 
 
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-	<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script> 
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
-	<!-- Link static JS files -->
-	 	<!-- XLSX Library for Export -->
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
     <!-- DataTables JS -->
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>

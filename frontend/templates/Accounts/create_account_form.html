@@ -120,7 +120,7 @@ function loadAccounts() {
                     <td>${accountType}</td>   
                     <td>${account.opening_balance}</td>
                     <td>
-                        <button class="btn btn-warning btn-sm" onclick="editAccount(${account.id}, '${account.name}', '${account.account_type.id}', '${account.description}', ${account.opening_balance}, ${account.handles_income}, ${account.handles_expenditure})">
+                        <button class="btn btn-warning btn-sm" onclick="deleteAccount(${account.id}, '${account.name}', '${account.account_type.id}', '${account.description}', ${account.opening_balance}, ${account.handles_income}, ${account.handles_expenditure})">
                             <i class="la la-pencil"></i>
                         </button>
                         <button class="btn btn-danger btn-sm" onclick="deleteAccount(${account.id})">
@@ -166,46 +166,7 @@ document.getElementById('accountForm').addEventListener('submit', function(event
     .catch(error => console.error('Error:', error));
 });
 
-// Edit function
-function editAccount(id, name, account_type, description, opening_balance) {
-    document.getElementById('name').value = name;
-    document.getElementById('account_type').value = account_type;
-    document.getElementById('description').value = description;
-    document.getElementById('opening_balance').value = opening_balance; 
 
-    // Update form action
-    document.getElementById('accountForm').onsubmit = function(event) {
-        event.preventDefault();
-
-        let updatedName = document.getElementById('name').value;
-        let updatedAccountType = document.getElementById('account_type').value;
-        let updatedDescription = document.getElementById('description').value;
-        let updatedOpeningBalance = document.getElementById('opening_balance').value; 
-        let csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-
-        fetch(`http://127.0.0.1:8000/api/accounts/update/${id}/`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': csrfToken
-            },
-            body: JSON.stringify({ name: updatedName, account_type: updatedAccountType, description: updatedDescription, opening_balance: updatedOpeningBalance})
-        })
-        .then(response => response.json())
-        .then(data => {
-            let messageDiv = document.getElementById('responseMessage');
-            if (data.id) {
-                messageDiv.innerHTML = '<div class="alert alert-success">Account Updated Successfully!</div>';
-                document.getElementById('accountForm').reset();
-                loadAccounts(); // Reload table
-                document.getElementById('accountForm').onsubmit = originalSubmit; // Reset form action
-            } else {
-                messageDiv.innerHTML = '<div class="alert alert-danger">Error: ' + JSON.stringify(data) + '</div>';
-            }
-        })
-        .catch(error => console.error('Error:', error));
-    };
-}
 
 // Delete function
 function deleteAccount(id) {
