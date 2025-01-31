@@ -19,3 +19,11 @@ def create_account_type_form(request):
 
 def create_account_form(request):
     return render(request, "Accounts/create_account_form.html")
+
+def create_income_category_form(request):
+    return render(request, "Categories/create_income_category_form.html")
+
+def create_expenditure_category_form(request):
+    return render(request, "Categories/create_expenditure_category_form.html")
+
+

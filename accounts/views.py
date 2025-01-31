@@ -28,6 +28,24 @@ def retrieve_income_category(request):
     except IncomeCategory.DoesNotExist:
         return Response({"error": "Income Category not found."}, status=status.HTTP_404_NOT_FOUND)
 
+
+# List of income categories 
+@api_view(['GET'])
+def list_income_categories(request):
+    # Fetch all categories and related account data using select_related to optimize query
+    categories = IncomeCategory.objects.all().select_related('account').order_by('-id')
+
+    # Manually structure the data to include the account name
+    categories_data = []
+    for category in categories:
+        categories_data.append({
+            'id': category.id,
+            'name': category.name,
+            'account_name': category.account.name if category.account else 'No account',  # Handle missing account
+            'description': category.description
+        })
+    
+    return Response(categories_data)
 # Update Income Category
 @api_view(["POST"])
 def update_income_category(request):
@@ -64,6 +82,25 @@ def create_expenditure_category(request):
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+# List of income categories 
+@api_view(['GET'])
+def list_expenditure_categories(request):
+    # Fetch all categories and related account data using select_related to optimize query
+    categories = ExpenditureCategory.objects.all().select_related('account').order_by('-id')
+
+    # Manually structure the data to include the account name
+    categories_data = []
+    for category in categories:
+        categories_data.append({
+            'id': category.id,
+            'name': category.name,
+            'account_name': category.account.name if category.account else 'No account',  # Handle missing account
+            'description': category.description
+        })
+    
+    return Response(categories_data)
 
 # Retrieve Expenditure Category
 @api_view(["POST"])

@@ -22,7 +22,7 @@
                 <div class="col-md-5">
                     <div class="card shadow-sm border-0 rounded">
                         <div class="card-header bg-primary text-white text-center">
-                            <h5 class="mb-0">Create Income Category</h5>
+                            <h5 class="mb-0">Create Expenditure Category</h5>
                         </div>
                         <div class="card-body">
                             <form id="categoryForm">
@@ -57,7 +57,7 @@
                 <div class="col-md-7">
                     <div class="card shadow-sm border-0 rounded">
                         <div class="card-header bg-primary text-white text-center">
-                            <h5 class="mb-0">Income Categories</h5>
+                            <h5 class="mb-0">Expenditure Categories</h5>
                         </div>
                         <div class="card-body">
                             <!-- Export Icon Inside Table Header -->
@@ -102,7 +102,7 @@ function loadAccount() {
 }
 
 function loadCategories() {
-    fetch('http://127.0.0.1:8000/api/income-category/list/')
+    fetch('http://127.0.0.1:8000/api/expenditure-category/list/')
     .then(response => response.json())
     .then(data => {
         let tableBody = document.getElementById('CategoriesTableBody');
@@ -139,7 +139,7 @@ document.getElementById('categoryForm').addEventListener('submit', function(even
     let description = document.getElementById('description').value; 
     let csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
-    fetch('http://127.0.0.1:8000/api/income-category/create/', {
+    fetch('http://127.0.0.1:8000/api/expenditure-category/create/', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -167,7 +167,7 @@ function deleteCategory(id) {
 
     let csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
-    fetch(`http://127.0.0.1:8000/api/income-category/delete/${id}/`, {
+    fetch(`http://127.0.0.1:8000/api/expenditure-category/delete/${id}/`, {
         method: 'DELETE',
         headers: {
             'X-CSRFToken': csrfToken

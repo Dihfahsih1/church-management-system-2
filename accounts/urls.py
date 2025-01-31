@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import  create_account_type, delete_account_type, list_account_types, list_or_create_accounts, retrieve_account, retrieve_account_type, update_account, delete_account,\
+from .views import  create_account_type, delete_account_type, list_account_types, list_expenditure_categories, list_income_categories, list_or_create_accounts, retrieve_account, retrieve_account_type, update_account, delete_account,\
                     create_income, retrieve_income, update_account_type, update_income, delete_income,\
                     create_expenditure,retrieve_expenditure,update_expenditure,delete_expenditure, \
                     create_income_category, retrieve_income_category, update_income_category, delete_income_category, \
@@ -34,11 +34,14 @@ urlpatterns = [
     path("income-category/retrieve/", retrieve_income_category, name="retrieve_income_category"),
     path("income-category/update/", update_income_category, name="update_income_category"),
     path("income-category/delete/", delete_income_category, name="delete_income_category"),
+    path("income-category/list/", list_income_categories, name="list_income_categories"),
+    
 
     # Expenditure Category
     path("expenditure-category/create/", create_expenditure_category, name="create_expenditure_category"),
     path("expenditure-category/retrieve/", retrieve_expenditure_category, name="retrieve_expenditure_category"),
     path("expenditure-category/update/", update_expenditure_category, name="update_expenditure_category"),
     path("expenditure-category/delete/", delete_expenditure_category, name="delete_expenditure_category"),
+    path("expenditure-category/list/", list_expenditure_categories, name="list_expenditure_categories"),
  
 ]
