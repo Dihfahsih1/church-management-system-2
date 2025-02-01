@@ -26,4 +26,10 @@ def create_income_category_form(request):
 def create_expenditure_category_form(request):
     return render(request, "Categories/create_expenditure_category_form.html")
 
+def add_expenditure_form(request):
+    return render(request, "Expenditure/add_expenditure_form.html")
+
+def add_income_form(request):
+    return render(request, "Incomes/add_income_form.html")
+
 

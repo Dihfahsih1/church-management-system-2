@@ -42,7 +42,6 @@ class ExpenditureCategorySerializer(serializers.ModelSerializer):
 
 
 class IncomeSerializer(serializers.ModelSerializer):
-    category = IncomeCategorySerializer()  # Nested category serializer
 
     class Meta:
         model = Income
@@ -50,7 +49,6 @@ class IncomeSerializer(serializers.ModelSerializer):
 
 
 class ExpenditureSerializer(serializers.ModelSerializer):
-    category = ExpenditureCategorySerializer()  # Nested category serializer
 
     class Meta:
         model = Expenditure

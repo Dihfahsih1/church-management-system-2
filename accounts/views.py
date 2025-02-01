@@ -275,6 +275,24 @@ def create_income(request):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+# List of income categories 
+@api_view(['GET'])
+def list_incomes(request):
+    incomes = Income.objects.all().select_related('category').order_by('-id')
+
+    # Manually structure the data to include the income name
+    incomes_data = []
+    for income in incomes:
+        incomes_data.append({
+            'id': income.id,
+            'account_name': income.account.name if income.account else 'No account',  # Handle missing account
+            'category_name': income.category.name if income.category else 'No category',
+            'amount': income.amount if income.amount else 0,
+            'description': income.description
+        })
+    
+    return Response(incomes_data)
+
 # Retrieve Income
 @api_view(["POST"])
 def retrieve_income(request):
@@ -323,6 +341,23 @@ def create_expenditure(request):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+# List of income categories 
+@api_view(['GET'])
+def list_expenditure(request):
+    expenditures = Expenditure.objects.all().select_related('category').order_by('-id')
+
+    # Manually structure the data to include the expenditure name
+    expenditure_data = []
+    for expenditure in expenditures:
+        expenditure_data.append({
+            'id': expenditure.id,
+            'account_name': expenditure.account.name if expenditure.account else 'No account',  # Handle missing account
+            'category_name': expenditure.category.name if expenditure.category else 'No category',
+            'amount': expenditure.amount if expenditure.amount else 0,
+            'description': expenditure.description
+        })
+    
+    return Response(expenditure_data)
 
 @api_view(["POST"])
 def retrieve_expenditure(request):
