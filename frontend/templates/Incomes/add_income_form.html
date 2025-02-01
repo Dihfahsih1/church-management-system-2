@@ -26,6 +26,7 @@
                         </div>
                         <div class="card-body">
                             <form id="IncomeForm">
+                                <input type="hidden" id="income_id">
                                 {% csrf_token %}
                                 
                                 <div class="mb-3"> 
@@ -89,6 +90,45 @@
     </div>
 </div>
 
+<!-- Modal for Editing Income -->
+<div class="modal fade" id="editIncomeModal" tabindex="-1" aria-labelledby="editIncomeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editIncomeModalLabel">Edit Income</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="modalIncomeForm">
+            <input type="hidden" id="modal_income_id">
+            {% csrf_token %}
+            <div class="mb-3"> 
+              <select class="form-select" id="modal_account" required>
+                <option value="">Select Account</option>
+                <!-- Options will be populated by JS -->
+              </select>
+            </div>
+            <div class="mb-3">
+              <select class="form-select" id="modal_category" required>
+                <option value="">Select Category</option>
+                <!-- Options will be populated by JS -->
+              </select>
+            </div>
+            <div class="mb-3">
+              <input type="text" class="form-control" id="modal_amount" placeholder="Enter Amount" required>
+            </div>
+            <div class="mb-3"> 
+              <input type="text" class="form-control" id="modal_description" placeholder="Enter Income Narration" required>
+            </div>
+            <div class="d-grid gap-2">
+              <button type="submit" id="modalSubmitButton" class="btn btn-success">Update</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
 <script>
 
 function loadAccount() {
@@ -101,11 +141,77 @@ function loadAccount() {
             let option = document.createElement('option');
             option.value = account.id;
             option.textContent = account.name;
+            // Preselect the option if it matches the current account
+            if (account.id == document.getElementById('modal_account').value) {
+                option.selected = true;
+            }
+
             selectField.appendChild(option);
         });
     })
     .catch(error => console.error('Error loading accounts:', error));
 }
+
+function openEditModal(id, account, category, amount, description) {
+    // Set the data in the modal
+    document.getElementById('modal_income_id').value = id;
+    
+    // Preselect the account and category dropdowns
+    document.getElementById('modal_account').value = account; // Account ID
+    document.getElementById('modal_category').value = category; // Category ID
+    
+    // Set other form fields
+    document.getElementById('modal_amount').value = amount;
+    document.getElementById('modal_description').value = description;
+
+    //Load accounts and categories dynamically if they are not loaded
+    loadAccount();
+    loadIncomeCategories();
+
+    // Show the modal
+    var myModal = new bootstrap.Modal(document.getElementById('editIncomeModal'));
+    myModal.show();
+}
+
+// Update the income
+document.getElementById('modalIncomeForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    let incomeId = document.getElementById('modal_income_id').value;
+    let account = document.getElementById('modal_account').value;
+    let category = document.getElementById('modal_category').value;
+    let amount = document.getElementById('modal_amount').value;
+    let description = document.getElementById('modal_description').value; 
+
+    let url = 'http://127.0.0.1:8000/api/incomes/update/';
+    let formData = new FormData();
+    formData.append('id', incomeId);
+    formData.append('account', account);
+    formData.append('category', category);
+    formData.append('amount', amount);
+    formData.append('description', description);
+
+    fetch(url, {
+        method: 'POST', 
+        headers: {
+            'X-CSRFToken': csrfToken
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        let messageDiv = document.getElementById('responseMessage');
+        if (data.id) {
+            messageDiv.innerHTML = `<div class="alert alert-success">Income Updated Successfully!</div>`;
+            loadIncomes();
+            var myModal = bootstrap.Modal.getInstance(document.getElementById('editIncomeModal'));
+            myModal.hide(); // Hide the modal after successful update
+        } else {
+            messageDiv.innerHTML = `<div class="alert alert-danger">Error: ${JSON.stringify(data)}</div>`;
+        }
+    })
+    .catch(error => console.error('Error:', error));
+});
 
 function loadIncomeCategories() {
     fetch('http://127.0.0.1:8000/api/income-category/list/')
@@ -117,6 +223,8 @@ function loadIncomeCategories() {
             let option = document.createElement('option');
             option.value = categories.id;
             option.textContent = categories.name;
+
+            
             selectField.appendChild(option);
         });
     })
@@ -130,9 +238,9 @@ function loadIncomes() {
         let tableBody = document.getElementById('incomesTableBody');
         tableBody.innerHTML = ''; // Clear existing table rows
         data.forEach(income => {
-            // Access account_name directly from the response
-            let accountName = income.account_name || 'No account';  // Handle missing account
-            let CategoryName = income.category_name || 'No category';  // Handle missing account
+            
+            let accountName = income.account_name || 'No account';   
+            let CategoryName = income.category_name || 'No category';  
 
             let row = 
                 `<tr>
@@ -140,13 +248,10 @@ function loadIncomes() {
                     <td>${CategoryName}</td> 
                     <td>${income.amount}</td>  
                     <td>${income.description}</td>
-                    <td>
-                        <button class="btn btn-warning btn-sm" onclick="edit">
-                            <i class="la la-pencil"></i>
-                        </button>
-                        <button class="btn btn-danger btn-sm" onclick="delete(${income.id})">
-                            <i class="la la-trash"></i>
-                        </button>
+                    <td> 
+                        <button class="btn btn-warning btn-sm" onclick="openEditModal(${income.id}, '${income.account_name}', '${income.category_name}', '${income.amount}', '${income.description}')">Edit</button>
+                         
+                        
                     </td>
                 </tr>`;
             tableBody.innerHTML += row;
@@ -158,7 +263,7 @@ function loadIncomes() {
 document.getElementById('IncomeForm').addEventListener('submit', function(event) {
     event.preventDefault();
     
-    let csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value; // Get CSRF token
+    let csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value; //  
     let account = document.getElementById('account').value;
     let category = document.getElementById('category').value;
     let amount = document.getElementById('amount').value;
@@ -168,9 +273,9 @@ document.getElementById('IncomeForm').addEventListener('submit', function(event)
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRFToken': csrfToken  // Include CSRF token
+            'X-CSRFToken': csrfToken  //    
         },
-        body: JSON.stringify({ account, category, amount, description }) // Removed 'name' (was undefined)
+        body: JSON.stringify({ account, category, amount, description }) //      
     })
     .then(response => response.json())
     .then(data => {
@@ -178,7 +283,7 @@ document.getElementById('IncomeForm').addEventListener('submit', function(event)
         if (data.id) {
             messageDiv.innerHTML = '<div class="alert alert-success">Income Created Successfully!</div>';
             document.getElementById('IncomeForm').reset();
-            loadIncomes(); // Reload incomes
+            loadIncomes(); //    
         } else {
             messageDiv.innerHTML = '<div class="alert alert-danger">Error: ' + JSON.stringify(data) + '</div>';
         }
@@ -201,7 +306,7 @@ function deleteCategory(id) {
     .then(response => {
         if (response.ok) {
             document.getElementById('responseMessage').innerHTML = '<div class="alert alert-success">Income Deleted Successfully!</div>';
-            loadincomes(); // Fix: Reload incomes, not accounts
+            loadIncomes();  
         } else {
             document.getElementById('responseMessage').innerHTML = '<div class="alert alert-danger">Error deleting Income.</div>';
         }
