@@ -285,6 +285,8 @@ def list_incomes(request):
     for income in incomes:
         incomes_data.append({
             'id': income.id,
+            'account_id': income.account_id,
+            'account_id': income.category_id,
             'account_name': income.account.name if income.account else 'No account',  # Handle missing account
             'category_name': income.category.name if income.category else 'No category',
             'amount': income.amount if income.amount else 0,

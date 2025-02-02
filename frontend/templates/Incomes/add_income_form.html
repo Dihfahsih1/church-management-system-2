@@ -91,44 +91,43 @@
 <!-- Modal for Editing Income -->
 <div class="modal fade" id="editIncomeModal" tabindex="-1" aria-labelledby="editIncomeModalLabel" aria-hidden="true">
     <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="editIncomeModalLabel">Edit Income</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editIncomeModalLabel">Edit Income</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="modalIncomeForm">
+                    <input type="hidden" id="modal_income_id">
+                    {% csrf_token %}
+                    <div class="mb-3"> 
+                        <select class="form-select" id="modal_account" required> 
+                            <!-- Options will be populated by JS -->
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <select class="form-select" id="modal_category" required>
+                             
+                            <!-- Options will be populated by JS -->
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <input type="text" class="form-control" id="modal_amount" placeholder="Enter Amount" required>
+                    </div>
+                    <div class="mb-3"> 
+                        <input type="text" class="form-control" id="modal_description" placeholder="Enter Income Narration" required>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" id="modalSubmitButton" class="btn btn-success">Update</button>
+                    </div>
+                </form>
+            </div>
         </div>
-        <div class="modal-body">
-          <form id="modalIncomeForm">
-            <input type="hidden" id="modal_income_id">
-            {% csrf_token %}
-            <div class="mb-3"> 
-              <select class="form-select" id="modal_account" required>
-                <option value="">Select Account</option>
-                <!-- Options will be populated by JS -->
-              </select>
-            </div>
-            <div class="mb-3">
-              <select class="form-select" id="modal_category" required>
-                <option value="">Select Category</option>
-                <!-- Options will be populated by JS -->
-              </select>
-            </div>
-            <div class="mb-3">
-              <input type="text" class="form-control" id="modal_amount" placeholder="Enter Amount" required>
-            </div>
-            <div class="mb-3"> 
-              <input type="text" class="form-control" id="modal_description" placeholder="Enter Income Narration" required>
-            </div>
-            <div class="d-grid gap-2">
-              <button type="submit" id="modalSubmitButton" class="btn btn-success">Update</button>
-            </div>
-          </form>
-        </div>
-      </div>
     </div>
 </div>
 
 <script>
-// Function to load accounts
+// Function to load accounts and preselect the correct account
 function loadAccounts(callback, selectedAccountId = null) {  
     fetch('http://127.0.0.1:8000/api/accounts/list/')  
         .then(response => response.json())
@@ -141,23 +140,18 @@ function loadAccounts(callback, selectedAccountId = null) {
                 let option = document.createElement('option');
                 option.value = account.id;
                 option.textContent = account.name;
+                if (selectedAccountId && account.id == selectedAccountId) {
+                    option.selected = true; // Preselect the correct account
+                }
                 accountDropdown.appendChild(option);
             });
-
-            // Delay setting the selected value to ensure options are loaded
-            setTimeout(() => {
-                if (selectedAccountId) {
-                    accountDropdown.value = selectedAccountId;
-                    console.log("Preselected Account:", selectedAccountId);
-                }
-            }, 0); // Small delay for rendering
 
             if (callback) callback(); 
         }) 
         .catch(error => console.error('Error loading accounts:', error));
 }
 
-// Function to load income categories
+// Function to load income categories and preselect the correct category
 function loadIncomeCategories(callback, selectedCategoryId = null) {
     fetch('http://127.0.0.1:8000/api/income-category/list/')  
         .then(response => response.json())
@@ -170,41 +164,35 @@ function loadIncomeCategories(callback, selectedCategoryId = null) {
                 let option = document.createElement('option');
                 option.value = category.id;
                 option.textContent = category.name;
+                if (selectedCategoryId && category.id == selectedCategoryId) {
+                    option.selected = true; // Preselect the correct category
+                }
                 categoryDropdown.appendChild(option);
             });
-
-            // Delay setting the selected value
-            setTimeout(() => {
-                if (selectedCategoryId) {
-                    categoryDropdown.value = selectedCategoryId;
-                    console.log("Preselected Category:", selectedCategoryId);
-                }
-            }, 100);
 
             if (callback) callback(); 
         })
         .catch(error => console.error('Error loading categories:', error));
 }
 
-// Function to open the edit modal
 function openEditModal(id, accountId, categoryId, amount, description) {
     console.log("Opening edit modal with:", { id, accountId, categoryId, amount, description });
 
+    // Set the values for amount and description
     document.getElementById('modal_income_id').value = id;
     document.getElementById('modal_amount').value = amount;
     document.getElementById('modal_description').value = description;
 
     // Load accounts and categories with preselected values
-    loadAccounts(() => {}, accountId);
-    loadIncomeCategories(() => {}, categoryId);
-
-    // Open modal AFTER ensuring dropdowns are populated
-    setTimeout(() => {
-        var myModal = new bootstrap.Modal(document.getElementById('editIncomeModal'));
-        myModal.show();
-    }, 500); 
+    (() => {
+        // After accounts are loaded, load categories
+        loadAccountsloadIncomeCategories(() => {
+            // Open modal AFTER ensuring dropdowns are populated
+            var myModal = new bootstrap.Modal(document.getElementById('editIncomeModal'));
+            myModal.show();
+        }, categoryId); // Pass categoryId to preselect the correct category
+    }, accountId); // Pass accountId to preselect the correct account
 }
-
 // Update the income
 document.getElementById('modalIncomeForm').addEventListener('submit', function(event) {
     event.preventDefault();
@@ -260,7 +248,7 @@ function loadIncomes() {
                     <td>${income.amount}</td>  
                     <td>${income.description}</td>
                     <td> 
-                        <button class="btn btn-warning btn-sm" onclick="openEditModal(${income.id}, '${income.account_name}', '${income.category_id}', '${income.amount}', '${income.description}')">
+                        <button class="btn btn-warning btn-sm" onclick="openEditModal(${income.id}, ${income.account_id}, ${income.category_id}, '${income.amount}', '${income.description}')">
                             Edit
                         </button>
                     </td>
@@ -269,61 +257,6 @@ function loadIncomes() {
         });
     })
     .catch(error => console.error('Error loading incomes:', error));
-}
-
-// Submit form for creating income
-document.getElementById('IncomeForm').addEventListener('submit', function(event) {
-    event.preventDefault();
-    
-    let csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;  
-    let account = document.getElementById('account').value;
-    let category = document.getElementById('category').value;
-    let amount = document.getElementById('amount').value;
-    let description = document.getElementById('description').value; 
-
-    fetch('http://127.0.0.1:8000/api/incomes/create/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': csrfToken  
-        },
-        body: JSON.stringify({ account, category, amount, description })      
-    })
-    .then(response => response.json())
-    .then(data => {
-        let messageDiv = document.getElementById('responseMessage');
-        if (data.id) {
-            messageDiv.innerHTML = '<div class="alert alert-success">Income Created Successfully!</div>';
-            document.getElementById('IncomeForm').reset();
-            loadIncomes();    
-        } else {
-            messageDiv.innerHTML = '<div class="alert alert-danger">Error: ' + JSON.stringify(data) + '</div>';
-        }
-    })
-    .catch(error => console.error('Error:', error));
-});
-
-// Delete function
-function deleteIncome(id) {
-    if (!confirm("Are you sure you want to delete this Income?")) return;
-
-    let csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-
-    fetch(`http://127.0.0.1:8000/api/incomes/delete/${id}/`, {
-        method: 'DELETE',
-        headers: {
-            'X-CSRFToken': csrfToken
-        }
-    })
-    .then(response => {
-        if (response.ok) {
-            document.getElementById('responseMessage').innerHTML = '<div class="alert alert-success">Income Deleted Successfully!</div>';
-            loadIncomes();  
-        } else {
-            document.getElementById('responseMessage').innerHTML = '<div class="alert alert-danger">Error deleting Income.</div>';
-        }
-    })
-    .catch(error => console.error('Error:', error));
 }
 
 // Load data on page load
