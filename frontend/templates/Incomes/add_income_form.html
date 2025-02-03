@@ -107,7 +107,6 @@
                     </div>
                     <div class="mb-3">
                         <select class="form-select" id="modal_category" required>
-                             
                             <!-- Options will be populated by JS -->
                         </select>
                     </div>
@@ -183,16 +182,15 @@ function openEditModal(id, accountId, categoryId, amount, description) {
     document.getElementById('modal_amount').value = amount;
     document.getElementById('modal_description').value = description;
 
-    // Load accounts and categories with preselected values
-    (() => {
-        // After accounts are loaded, load categories
-        loadAccountsloadIncomeCategories(() => {
-            // Open modal AFTER ensuring dropdowns are populated
+    // Load accounts and categories, then show the modal
+    loadAccounts(() => {
+        loadIncomeCategories(() => {
             var myModal = new bootstrap.Modal(document.getElementById('editIncomeModal'));
             myModal.show();
-        }, categoryId); // Pass categoryId to preselect the correct category
-    }, accountId); // Pass accountId to preselect the correct account
+        }, categoryId);
+    }, accountId);
 }
+
 // Update the income
 document.getElementById('modalIncomeForm').addEventListener('submit', function(event) {
     event.preventDefault();
