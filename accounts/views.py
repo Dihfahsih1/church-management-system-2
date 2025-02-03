@@ -353,6 +353,8 @@ def list_expenditure(request):
     for expenditure in expenditures:
         expenditure_data.append({
             'id': expenditure.id,
+            'account_id': expenditure.account_id,
+            'category_id': expenditure.category_id,
             'account_name': expenditure.account.name if expenditure.account else 'No account',  # Handle missing account
             'category_name': expenditure.category.name if expenditure.category else 'No category',
             'amount': expenditure.amount if expenditure.amount else 0,
@@ -360,6 +362,7 @@ def list_expenditure(request):
         })
     
     return Response(expenditure_data)
+
 
 @api_view(["POST"])
 def retrieve_expenditure(request):

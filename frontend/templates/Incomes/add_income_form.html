@@ -101,12 +101,12 @@
                     <input type="hidden" id="modal_income_id">
                     {% csrf_token %}
                     <div class="mb-3"> 
-                        <select class="form-select" id="modal_account" required> 
+                        <select class="form-control form-select" id="modal_account" required> 
                             <!-- Options will be populated by JS -->
                         </select>
                     </div>
                     <div class="mb-3">
-                        <select class="form-select" id="modal_category" required>
+                        <select class="form-control form-select" id="modal_category" required>
                             <!-- Options will be populated by JS -->
                         </select>
                     </div>
@@ -222,8 +222,9 @@ document.getElementById('modalIncomeForm').addEventListener('submit', function(e
         if (data.id) {
             messageDiv.innerHTML = `<div class="alert alert-success">Income Updated Successfully!</div>`;
             loadIncomes();
-            var myModal = bootstrap.Modal.getInstance(document.getElementById('editIncomeModal'));
-            myModal.hide(); // Hide the modal after successful update
+
+            // Close the modal using jQuery
+            $('#editIncomeModal').modal('hide'); // jQuery method to hide the modal
         } else {
             messageDiv.innerHTML = `<div class="alert alert-danger">Error: ${JSON.stringify(data)}</div>`;
         }
