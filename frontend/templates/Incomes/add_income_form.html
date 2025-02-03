@@ -94,7 +94,10 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="editIncomeModalLabel">Edit Income</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <!-- Use data-dismiss for Bootstrap 4 -->
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
             <div class="modal-body">
                 <form id="modalIncomeForm">
@@ -223,7 +226,7 @@ document.getElementById('modalIncomeForm').addEventListener('submit', function(e
             messageDiv.innerHTML = `<div class="alert alert-success">Income Updated Successfully!</div>`;
             loadIncomes();
 
-            // Close the modal using jQuery
+            // Close the modal using jQuery (Bootstrap 4)
             $('#editIncomeModal').modal('hide'); // jQuery method to hide the modal
         } else {
             messageDiv.innerHTML = `<div class="alert alert-danger">Error: ${JSON.stringify(data)}</div>`;
@@ -231,6 +234,7 @@ document.getElementById('modalIncomeForm').addEventListener('submit', function(e
     })
     .catch(error => console.error('Error:', error));
 });
+
 
 // Function to load incomes
 function loadIncomes() {
