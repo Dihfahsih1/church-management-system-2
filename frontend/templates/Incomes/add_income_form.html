@@ -23,6 +23,10 @@
                     <div class="card shadow-sm border-0 rounded">
                         <div class="card-header bg-primary text-white text-center">
                             <h5 class="mb-0">Add Income</h5>
+                            <!-- Bootstrap Success Alert -->
+                            <div id="successMessage" class="alert alert-success d-none" role="alert">
+                                Income added successfully!
+                            </div>
                         </div>
                         <div class="card-body">
                             <form id="IncomeForm">
@@ -42,7 +46,7 @@
                                     </select>
                                 </div>
                                 <div class="mb-3">
-                                    <input type="text" class="form-control" id="amount" placeholder="Enter Amount" required>
+                                    <input type="number" class="form-control" id="amount" placeholder="Enter Amount" required>
                                 </div>
                                 <div class="mb-3"> 
                                     <input type="text" class="form-control" id="description" placeholder="Enter Income Narration" required>
@@ -100,7 +104,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form id="modalIncomeForm">
+                <form id="modalIncomeForm" method="POST">
                     <input type="hidden" id="modal_income_id">
                     {% csrf_token %}
                     <div class="mb-3"> 
@@ -114,7 +118,7 @@
                         </select>
                     </div>
                     <div class="mb-3">
-                        <input type="text" class="form-control" id="modal_amount" placeholder="Enter Amount" required>
+                        <input type="number" class="form-control" id="modal_amount" placeholder="Enter Amount" required>
                     </div>
                     <div class="mb-3"> 
                         <input type="text" class="form-control" id="modal_description" placeholder="Enter Income Narration" required>
@@ -129,50 +133,105 @@
 </div>
 
 <script>
-// Function to load accounts and preselect the correct account
-function loadAccounts(callback, selectedAccountId = null) {  
+
+// handle income creation form submission
+document.getElementById('IncomeForm').addEventListener('submit', function(event) {
+    event.preventDefault(); // Prevent default form submission (page reload)
+
+    let account = document.getElementById('account').value;
+    let category = document.getElementById('category').value;
+    let amount = document.getElementById('amount').value;
+    let description = document.getElementById('description').value;
+
+    let formData = new FormData();
+    formData.append('account', account);
+    formData.append('category', category);
+    formData.append('amount', amount);
+    formData.append('description', description);
+
+    fetch('http://127.0.0.1:8000/api/incomes/create/', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.id) {
+            // Show Bootstrap success message
+            let successMessage = document.getElementById("successMessage");
+            successMessage.classList.remove("d-none");
+
+            // Hide success message after 3 seconds
+            setTimeout(function() {
+                successMessage.classList.add("d-none");
+            }, 3000);
+
+            loadIncomes(); // Refresh the table
+            document.getElementById('IncomeForm').reset(); // Clear the form
+        } else {
+            alert('Error: ' + JSON.stringify(data));
+        }
+    })
+    .catch(error => console.error('Error:', error));
+});
+
+
+// Function to load accounts and populate both the main form and the modal
+function loadAccounts(selectedAccountId = null) {  
     fetch('http://127.0.0.1:8000/api/accounts/list/')  
         .then(response => response.json())
         .then(data => {
             console.log("Accounts fetched:", data);
-            let accountDropdown = document.getElementById('modal_account');
-            accountDropdown.innerHTML = '<option value="">Select Account</option>'; // Reset
+
+            let accountDropdown = document.getElementById('account'); // Main form
+            let modalAccountDropdown = document.getElementById('modal_account'); // Modal form
+            
+            // Reset dropdowns
+            accountDropdown.innerHTML = '<option value="">Select Account</option>';
+            modalAccountDropdown.innerHTML = '<option value="">Select Account</option>';
 
             data.forEach(account => {
-                let option = document.createElement('option');
-                option.value = account.id;
-                option.textContent = account.name;
-                if (selectedAccountId && account.id == selectedAccountId) {
-                    option.selected = true; // Preselect the correct account
-                }
-                accountDropdown.appendChild(option);
+                let option = `<option value="${account.id}">${account.name}</option>`;
+                accountDropdown.innerHTML += option; 
+                modalAccountDropdown.innerHTML += option;
             });
 
-            if (callback) callback(); 
+            // Preselect account if provided
+            if (selectedAccountId) {
+                accountDropdown.value = selectedAccountId;
+                modalAccountDropdown.value = selectedAccountId;
+            }
         }) 
         .catch(error => console.error('Error loading accounts:', error));
 }
 
-// Function to load income categories and preselect the correct category
-function loadIncomeCategories(callback, selectedCategoryId = null) {
+// Function to load income categories and populate both the main form and the modal
+function loadIncomeCategories(selectedCategoryId = null) {
     fetch('http://127.0.0.1:8000/api/income-category/list/')  
         .then(response => response.json())
         .then(data => {
             console.log("Categories fetched:", data);
-            let categoryDropdown = document.getElementById('modal_category');
-            categoryDropdown.innerHTML = '<option value="">Select Category</option>'; // Reset
+
+            let categoryDropdown = document.getElementById('category'); // Main form
+            let modalCategoryDropdown = document.getElementById('modal_category'); // Modal form
+
+            // Reset dropdowns
+            categoryDropdown.innerHTML = '<option value="">Select Category</option>';
+            modalCategoryDropdown.innerHTML = '<option value="">Select Category</option>';
 
             data.forEach(category => {
-                let option = document.createElement('option');
-                option.value = category.id;
-                option.textContent = category.name;
-                if (selectedCategoryId && category.id == selectedCategoryId) {
-                    option.selected = true; // Preselect the correct category
-                }
-                categoryDropdown.appendChild(option);
+                let option = `<option value="${category.id}">${category.name}</option>`;
+                categoryDropdown.innerHTML += option; 
+                modalCategoryDropdown.innerHTML += option;
             });
 
-            if (callback) callback(); 
+            // Preselect category if provided
+            if (selectedCategoryId) {
+                categoryDropdown.value = selectedCategoryId;
+                modalCategoryDropdown.value = selectedCategoryId;
+            }
         })
         .catch(error => console.error('Error loading categories:', error));
 }
@@ -225,9 +284,8 @@ document.getElementById('modalIncomeForm').addEventListener('submit', function(e
         if (data.id) {
             messageDiv.innerHTML = `<div class="alert alert-success">Income Updated Successfully!</div>`;
             loadIncomes();
-
-            // Close the modal using jQuery (Bootstrap 4)
-            $('#editIncomeModal').modal('hide'); // jQuery method to hide the modal
+ 
+            $('#editIncomeModal').modal('hide');  
         } else {
             messageDiv.innerHTML = `<div class="alert alert-danger">Error: ${JSON.stringify(data)}</div>`;
         }
