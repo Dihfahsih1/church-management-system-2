@@ -177,9 +177,8 @@ document.getElementById('IncomeForm').addEventListener('submit', function(event)
     .catch(error => console.error('Error:', error));
 });
 
-
 // Function to load accounts and populate both the main form and the modal
-function loadAccounts(selectedAccountId = null) {  
+function loadAccounts(selectedAccountId = null, callback = null) {  
     fetch('http://127.0.0.1:8000/api/accounts/list/')  
         .then(response => response.json())
         .then(data => {
@@ -203,12 +202,17 @@ function loadAccounts(selectedAccountId = null) {
                 accountDropdown.value = selectedAccountId;
                 modalAccountDropdown.value = selectedAccountId;
             }
+
+            // Execute callback if provided
+            if (callback) {
+                callback();
+            }
         }) 
         .catch(error => console.error('Error loading accounts:', error));
 }
 
 // Function to load income categories and populate both the main form and the modal
-function loadIncomeCategories(selectedCategoryId = null) {
+function loadIncomeCategories(selectedCategoryId = null, callback = null) {
     fetch('http://127.0.0.1:8000/api/income-category/list/')  
         .then(response => response.json())
         .then(data => {
@@ -232,6 +236,11 @@ function loadIncomeCategories(selectedCategoryId = null) {
                 categoryDropdown.value = selectedCategoryId;
                 modalCategoryDropdown.value = selectedCategoryId;
             }
+
+            // Execute callback if provided
+            if (callback) {
+                callback();
+            }
         })
         .catch(error => console.error('Error loading categories:', error));
 }
@@ -239,19 +248,34 @@ function loadIncomeCategories(selectedCategoryId = null) {
 function openEditModal(id, accountId, categoryId, amount, description) {
     console.log("Opening edit modal with:", { id, accountId, categoryId, amount, description });
 
-    // Set the values for amount and description
+    // Set input values in the modal
     document.getElementById('modal_income_id').value = id;
     document.getElementById('modal_amount').value = amount;
     document.getElementById('modal_description').value = description;
 
-    // Load accounts and categories, then show the modal
-    loadAccounts(() => {
-        loadIncomeCategories(() => {
-            var myModal = new bootstrap.Modal(document.getElementById('editIncomeModal'));
-            myModal.show();
-        }, categoryId);
-    }, accountId);
+    // Load accounts and preselect the correct one
+    loadAccounts(accountId, () => {
+        let accountDropdown = document.getElementById('modal_account');
+        let optionExists = [...accountDropdown.options].some(option => option.value == accountId);
+        if (optionExists) {
+            accountDropdown.value = accountId;
+        }
+    });
+
+    // Load categories and preselect the correct one
+    loadIncomeCategories(categoryId, () => {
+        let categoryDropdown = document.getElementById('modal_category');
+        let optionExists = [...categoryDropdown.options].some(option => option.value == categoryId);
+        if (optionExists) {
+            categoryDropdown.value = categoryId;
+        }
+    });
+
+    // Initialize and show the Bootstrap modal
+    let myModal = new bootstrap.Modal(document.getElementById('editIncomeModal'), {});
+    myModal.show();
 }
+
 
 // Update the income
 document.getElementById('modalIncomeForm').addEventListener('submit', function(event) {
