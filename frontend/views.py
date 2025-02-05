@@ -1,15 +1,21 @@
+from decimal import Decimal
 from django.shortcuts import render
 import requests
 
-from accounts.models import Account, Income
+from accounts.models import Account, Income, Expenditure
 from django.utils import timezone
 from datetime import timedelta
 from django.db.models import Sum
 
+
 def dashboard(request):
-    today = timezone.now().date()
-    start_of_week = today - timedelta(days=today.weekday())
-    total_income = Income.objects.filter(date__gte=start_of_week).aggregate(total=Sum('amount'))
+    today = timezone.localdate()   
+    start_of_week = today - timedelta(days=today.weekday()) 
+
+    total_income = Income.objects.filter(date__gte=start_of_week).aggregate(total=Sum('amount')).get('total', Decimal('0.00'))
+    total_expenses = Expenditure.objects.filter(date__gte=start_of_week).aggregate(total=Sum('amount')).get('total', Decimal('0.00'))
+
+
     api_url = "http://127.0.0.1:8000/api/accountstypes/list/"
     total_accounts = Account.objects.count()
     response = requests.get(api_url)
@@ -21,7 +27,7 @@ def dashboard(request):
         accounts = []
         account_count = 0
 
-    return render(request, "dashboard.html", {"total_income":total_income,"total_accounts":total_accounts,"accounts": accounts, "account_count": account_count})
+    return render(request, "dashboard.html", {"total_expenses":total_expenses,"total_income":total_income,"total_accounts":total_accounts,"accounts": accounts, "account_count": account_count})
 
 def create_account_type_form(request):
     return render(request, "Accounts/create_account_type.html")
