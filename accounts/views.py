@@ -285,6 +285,7 @@ def list_incomes(request):
     for income in incomes:
         incomes_data.append({
             'id': income.id,
+            'date':income.date,
             'account_id': income.account_id,
             'category_id': income.category_id,
             'account_name': income.account.name if income.account else 'No account',  # Handle missing account
@@ -353,6 +354,7 @@ def list_expenditure(request):
     for expenditure in expenditures:
         expenditure_data.append({
             'id': expenditure.id,
+            'date':expenditure.date,
             'account_id': expenditure.account_id,
             'category_id': expenditure.category_id,
             'account_name': expenditure.account.name if expenditure.account else 'No account',  # Handle missing account

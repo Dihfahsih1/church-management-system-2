@@ -73,10 +73,10 @@
                             <table id="incomesTable" class="table table-striped table-bordered">
                                 <thead class="table-striped">
                                     <tr>
+                                        <th>Date</th> 
                                         <th>Account</th> 
                                         <th>Category</th>
                                         <th>Amount</th>
-                                        <th>Description</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -328,12 +328,12 @@ function loadIncomes() {
         data.forEach(income => {
             let row = 
                 `<tr>
+                    <td>${income.date}</td>
                     <td>${income.account_name}</td>  
                     <td>${income.category_name}</td> 
                     <td>${income.amount}</td>  
-                    <td>${income.description}</td>
                     <td> 
-                        <button class="btn btn-warning btn-sm" onclick="openEditModal(${income.id}, ${income.account_id}, ${income.category_id}, '${income.amount}', '${income.description}')">
+                        <button class="btn btn-warning btn-sm" onclick="openEditModal(${income.id}, ${income.date}, ${income.account_id}, ${income.category_id}, '${income.amount}')">
                             Edit
                         </button>
                     </td>
