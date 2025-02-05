@@ -15,7 +15,6 @@ def dashboard(request):
     total_income = Income.objects.filter(date__gte=start_of_week).aggregate(total=Sum('amount')).get('total', Decimal('0.00'))
     total_expenses = Expenditure.objects.filter(date__gte=start_of_week).aggregate(total=Sum('amount')).get('total', Decimal('0.00'))
 
-
     total_accounts_types = AccountType.objects.count()
     total_accounts = Account.objects.count()
 

@@ -84,20 +84,52 @@
                 </div>
             </div>
             <div class="row">
+ 
+
                 <div class="col-md-3">
                     <div class="card">
                         <div class="card-header">
-                            <h4 class="card-title">Task</h4>
-                            <p class="card-category">Complete</p>
+                            <h4 class="card-title">Weekly Accountability</h4>
+                            <p class="card-category">Incomes and Expenses</p>
                         </div>
                         <div class="card-body">
-                            <div id="task-complete" class="chart-circle mt-4 mb-3"></div>
+                            <canvas id="task-complete"></canvas>
                         </div>
                         <div class="card-footer">
-                            <div class="legend"><i class="la la-circle text-primary"></i> Completed</div>
+                            <div class="legend"><i class="la la-circle text-primary"></i> Income</div>
+                            <div class="legend"><i class="la la-circle text-danger"></i> Expenses</div>
                         </div>
                     </div>
                 </div>
+                
+                <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                
+                <script>
+                    document.addEventListener("DOMContentLoaded", function () {
+                        const ctx = document.getElementById("task-complete").getContext("2d");
+                
+                        // Ensure Django variables are rendered as numbers
+                        const income = {{ total_income|default:0 }};
+                        const expenses = {{ total_expenses|default:0 }};
+                
+                        new Chart(ctx, {
+                            type: "pie",
+                            data: {
+                                labels: ["Income", "Expenses"],
+                                datasets: [{
+                                    data: [income, expenses], // Use variables
+                                    backgroundColor: ["#1D62F0", "#FF3D67"], // Blue for income, Red for expenses
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false
+                            }
+                        });
+                    });
+                </script>
+                
+            
                 <div class="col-md-9">
                     <div class="card">
                         <div class="card-header">
