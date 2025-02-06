@@ -17,8 +17,7 @@
     <div class="content">
         <div class="container mt-3">
             <div class="row">
-                
-                <!-- Left Column: Form -->
+                 
                 <div class="col-md-5">
                     <div class="card shadow-sm border-0 rounded">
                         <div class="card-header bg-primary text-white text-center">
@@ -60,8 +59,7 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Right Column: Table -->
+ 
                 <div class="col-md-7">
                     <div class="card shadow-sm border-0 rounded">
                         <div class="card-header bg-primary text-white text-center">
@@ -91,8 +89,7 @@
         </div>
     </div>
 </div>
-
-<!-- Modal for Editing Income -->
+ 
 <div class="modal fade" id="editIncomeModal" tabindex="-1" aria-labelledby="editIncomeModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -168,8 +165,8 @@ document.getElementById('IncomeForm').addEventListener('submit', function(event)
                 successMessage.classList.add("d-none");
             }, 3000);
 
-            loadIncomes(); // Refresh the table
-            document.getElementById('IncomeForm').reset(); // Clear the form
+            loadIncomes();  
+            document.getElementById('IncomeForm').reset(); 
         } else {
             alert('Error: ' + JSON.stringify(data));
         }
@@ -220,8 +217,7 @@ function loadIncomeCategories(selectedCategoryId = null, callback = null) {
 
             let categoryDropdown = document.getElementById('category'); // Main form
             let modalCategoryDropdown = document.getElementById('modal_category'); // Modal form
-
-            // Reset dropdowns
+ 
             categoryDropdown.innerHTML = '<option value="">Select Category</option>';
             modalCategoryDropdown.innerHTML = '<option value="">Select Category</option>';
 
@@ -236,8 +232,7 @@ function loadIncomeCategories(selectedCategoryId = null, callback = null) {
                 categoryDropdown.value = selectedCategoryId;
                 modalCategoryDropdown.value = selectedCategoryId;
             }
-
-            // Execute callback if provided
+ 
             if (callback) {
                 callback();
             }
@@ -270,8 +265,7 @@ function openEditModal(id, accountId, categoryId, amount, description) {
             categoryDropdown.value = categoryId;
         }
     });
-
-    // Initialize and show the Bootstrap modal
+ 
     let myModal = new bootstrap.Modal(document.getElementById('editIncomeModal'), {});
     myModal.show();
 }
@@ -324,7 +318,7 @@ function loadIncomes() {
     .then(response => response.json())
     .then(data => {
         let tableBody = document.getElementById('incomesTableBody');
-        tableBody.innerHTML = ''; // Clear existing table rows
+        tableBody.innerHTML = '';  
         data.forEach(income => {
             let row = 
                 `<tr>
