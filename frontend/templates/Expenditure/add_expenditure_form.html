@@ -29,11 +29,8 @@
                                 {% csrf_token %}
                                 
                                 <div class="mb-3"> 
-                                    <div class="input-group date" id="datepicker">
-                                        <input type="text" class="form-control" id="datePickerInput">
-                                        <span class="input-group-text">
-                                            <i class="bi bi-calendar"></i>
-                                        </span>
+                                    <div class="input-group date">
+                                        <input type="date" class="form-control" id="date"> 
                                     </div>
 
                                     <div class="mb-3"> 
@@ -111,6 +108,10 @@
                 <form id="modalExpenditureForm" method="POST">
                     <input type="hidden" id="modal_expenditure_id">
                     {% csrf_token %}
+                    <div class="mb-3">
+                        <input type="date" class="form-control" id="modal_date" required>
+                    </div>
+
                     <div class="mb-3"> 
                         <select class="form-control form-select" id="modal_account" required> 
                             <!-- Options will be populated by JS -->
@@ -158,7 +159,7 @@
 <script>
 
 
-
+//Submit expenditure
 document.getElementById('ExpenditureForm').addEventListener('submit', function(event) {
     event.preventDefault();
     
@@ -167,7 +168,7 @@ document.getElementById('ExpenditureForm').addEventListener('submit', function(e
     let category = document.getElementById('category').value;
     let amount = document.getElementById('amount').value;
     let description = document.getElementById('description').value; 
-    let datepicker = document.getElementById('datepicker').value; 
+    let date = document.getElementById('date').value; 
 
     
     fetch('http://127.0.0.1:8000/api/expenditures/create/', {
@@ -176,7 +177,7 @@ document.getElementById('ExpenditureForm').addEventListener('submit', function(e
             'Content-Type': 'application/json',
             'X-CSRFToken': csrfToken  // Include CSRF token
         },
-        body: JSON.stringify({ datepicker, account, category, amount, description })  
+        body: JSON.stringify({ date, account, category, amount, description })  
     })
     .then(response => response.json())
     .then(data => {
@@ -196,8 +197,7 @@ document.getElementById('ExpenditureForm').addEventListener('submit', function(e
 function loadAccounts(selectedAccountId = null, callback = null) {  
     fetch('http://127.0.0.1:8000/api/accounts/list/')  
         .then(response => response.json())
-        .then(data => {
-            console.log("Accounts fetched:", data);
+        .then(data => { 
 
             let accountDropdown = document.getElementById('account'); // Main form
             let modalAccountDropdown = document.getElementById('modal_account'); // Modal form
@@ -231,8 +231,7 @@ function loadAccounts(selectedAccountId = null, callback = null) {
 function loadExpenditureCategories(selectedCategoryId = null, callback = null) {
     fetch('http://127.0.0.1:8000/api/expenditure-category/list/')  
         .then(response => response.json())
-        .then(data => {
-            console.log("Categories fetched:", data);
+        .then(data => { 
 
             let categoryDropdown = document.getElementById('category'); // Main form
             let modalCategoryDropdown = document.getElementById('modal_category'); // Modal form
@@ -262,16 +261,16 @@ function loadExpenditureCategories(selectedCategoryId = null, callback = null) {
 }
 
 
-function openEditModal(id,date, accountId, categoryId, amount, description) {
-
+function openEditModal(id, date, accountId, categoryId, amount, description) {
+    console.log("Date", date);
     // Set input values in the modal
     document.getElementById('modal_expenditure_id').value = id;
-    document.getElementById('datepicker').value = date;
+    document.getElementById('modal_date').value = date || '';
     document.getElementById('modal_amount').value = amount;
     document.getElementById('modal_description').value = description;
-
     // Load accounts and preselect the correct one
     loadAccounts(accountId, () => {
+        
         let accountDropdown = document.getElementById('modal_account');
         let optionExists = [...accountDropdown.options].some(option => option.value == accountId);
         if (optionExists) {
@@ -300,7 +299,7 @@ document.getElementById('modalExpenditureForm').addEventListener('submit', funct
 
     let expenditureId = document.getElementById('modal_expenditure_id').value;
     let account = document.getElementById('modal_account').value;
-    let date = document.getElementById('datepicker').value;
+    let date = document.getElementById('modal_date').value;
     let category = document.getElementById('modal_category').value;
     let amount = document.getElementById('modal_amount').value;
     let description = document.getElementById('modal_description').value; 
@@ -354,7 +353,7 @@ function loadExpenditures() {
                     <td>${expenditure.amount}</td>  
                     <td>${expenditure.description}</td>  
                     <td> 
-                        <button class="btn btn-success btn-sm" onclick="openEditModal(${expenditure.id},${expenditure.date}, ${expenditure.account_id}, ${expenditure.category_id}, '${expenditure.amount}', '${expenditure.description}')">
+                        <button class="btn btn-success btn-sm" onclick="openEditModal(${expenditure.id},'${expenditure.date}', ${expenditure.account_id}, ${expenditure.category_id}, '${expenditure.amount}', '${expenditure.description}')">
                             Edit
                         </button>
                         <button class="btn btn-danger btn-sm" onclick="openDeleteModal(${expenditure.id})">
