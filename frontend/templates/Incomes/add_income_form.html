@@ -326,7 +326,7 @@ function loadIncomes() {
                     <td>${income.category_name}</td> 
                     <td>${income.amount}</td>  
                     <td> 
-                        <button class="btn btn-warning btn-sm" onclick="openEditModal(${income.id}, ${income.date}, ${income.account_id}, ${income.category_id}, '${income.amount}')">
+                        <button class="btn btn-warning btn-sm" onclick="openEditModal(${income.id}, ${income.account_id}, ${income.category_id}, ${income.amount}, '${income.description}')">
                             Edit
                         </button>
                     </td>

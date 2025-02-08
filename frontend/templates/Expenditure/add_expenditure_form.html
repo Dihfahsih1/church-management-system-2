@@ -322,8 +322,9 @@ function loadExpenditures() {
                     <td>${expenditure.account_name}</td>  
                     <td>${expenditure.category_name}</td> 
                     <td>${expenditure.amount}</td>  
+                    <td>${expenditure.description}</td>  
                     <td> 
-                        <button class="btn btn-success btn-sm" onclick="openEditModal(${expenditure.id}, ${expenditure.account_id}, ${expenditure.category_id}, '${expenditure.amount}', '${expenditure.descriptionfix }')">
+                        <button class="btn btn-success btn-sm" onclick="openEditModal(${expenditure.id}, ${expenditure.account_id}, ${expenditure.category_id}, '${expenditure.amount}', '${expenditure.description}')">
                             Edit
                         </button>
                         <button class="btn btn-danger btn-sm" onclick="openEditModal(${expenditure.id}}')">
