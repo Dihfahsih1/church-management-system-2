@@ -134,6 +134,9 @@
                 </form>
             </div>
         </div>
+    </div>
+</div>
+
 <!--Delete confirmation Modal -->
 <div class="modal fade" id="deleteExpenditureModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -356,7 +359,7 @@ function loadExpenditures() {
                         <button class="btn btn-success btn-sm" onclick="openEditModal(${expenditure.id},'${expenditure.date}', ${expenditure.account_id}, ${expenditure.category_id}, '${expenditure.amount}', '${expenditure.description}')">
                             Edit
                         </button>
-                        <button class="btn btn-danger btn-sm" onclick="openDeleteModal(${expenditure.id})">
+                        <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteExpenditureModal"  onclick="openDeleteModal(${expenditure.id})">
                             Delete
                         </button>
 
