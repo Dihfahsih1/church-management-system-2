@@ -300,14 +300,18 @@ document.getElementById('modalIncomeForm').addEventListener('submit', function(e
         let messageDiv = document.getElementById('responseMessage');
         if (data.id) {
             messageDiv.innerHTML = `<div class="alert alert-success">Income Updated Successfully!</div>`;
-            loadIncomes();
+            
  
             $('#editIncomeModal').click();  
+            loadIncomes(); 
         } else {
             messageDiv.innerHTML = `<div class="alert alert-danger">Error: ${JSON.stringify(data)}</div>`;
         }
     })
     .catch(error => console.error('Error:', error));
+
+    
+
 });
 
 
