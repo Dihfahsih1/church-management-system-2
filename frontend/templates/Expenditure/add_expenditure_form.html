@@ -74,6 +74,7 @@
                                         <th>Account</th> 
                                         <th>Category</th>
                                         <th>Amount</th> 
+                                        <th>Description</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -298,7 +299,7 @@ document.getElementById('modalExpenditureForm').addEventListener('submit', funct
             messageDiv.innerHTML = `<div class="alert alert-success">Expenditure Updated Successfully!</div>`;
             loadExpenditures();
  
-            $('#editExpenditureModal').modal('hide');  
+            $('#editExpenditureModal').click();  
         } else {
             messageDiv.innerHTML = `<div class="alert alert-danger">Error: ${JSON.stringify(data)}</div>`;
         }

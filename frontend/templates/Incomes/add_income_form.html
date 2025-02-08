@@ -302,7 +302,7 @@ document.getElementById('modalIncomeForm').addEventListener('submit', function(e
             messageDiv.innerHTML = `<div class="alert alert-success">Income Updated Successfully!</div>`;
             loadIncomes();
  
-            $('#editIncomeModal').modal('hide');  
+            $('#editIncomeModal').click();  
         } else {
             messageDiv.innerHTML = `<div class="alert alert-danger">Error: ${JSON.stringify(data)}</div>`;
         }
