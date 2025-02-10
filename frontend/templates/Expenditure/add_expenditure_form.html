@@ -5,11 +5,11 @@
 <style>
     .export-icon {
         cursor: pointer;
-        color: #198754; /* Green Excel-like color */
+        color: #198754; 
         font-size: 1.5rem;
     }
     .export-icon:hover {
-        color: #145c32; /* Darker green */
+        color: #145c32;  
     }
 </style>
 
@@ -17,8 +17,6 @@
     <div class="content">
         <div class="container mt-3">
             <div class="row">
-                
-                <!-- Left Column: Form -->
                 <div class="col-md-5">
                     <div class="card shadow-sm border-0 rounded">
                         <div class="card-header bg-primary text-white text-center">
@@ -70,8 +68,8 @@
                         </div>
                         <div class="card-body">
                             <!-- Export Icon Inside Table Header -->
-                            <i class="fa fa-file-excel export-icon" onclick="exportToExcel('expenditureTable', 'expenditure')" title="Export to Excel"></i>
-                            <table id="expendituresTable" class="table table-striped table-bordered">
+                            <i class="fa fa-file-excel export-icon" onclick="exportToExcel('exportToExcel', 'expenditure')" title="Export to Excel"></i>
+                            <table id="exportToExcel" class="table table-striped table-bordered">
                                 <thead class="table-striped">
                                     <tr>
                                         <th>Date</th>
@@ -265,7 +263,7 @@ function loadExpenditureCategories(selectedCategoryId = null, callback = null) {
 
 
 function openEditModal(id, date, accountId, categoryId, amount, description) {
-    console.log("Date", date);
+     
     // Set input values in the modal
     document.getElementById('modal_expenditure_id').value = id;
     document.getElementById('modal_date').value = date || '';
@@ -352,9 +350,9 @@ function loadExpenditures() {
                     <td>${expenditure.date}</td>
                     <td>${expenditure.account_name}</td>  
                     <td>${expenditure.category_name}</td> 
-                    <td>${expenditure.amount}</td>   
+                    <td>${expenditure.amount}</td>       
                     <td> 
-                        <button class="btn btn-success btn-sm" onclick="openEditModal(${expenditure.id},'${expenditure.date}', ${expenditure.account_id}, ${expenditure.category_id}, '${expenditure.amount}')">
+                        <button class="btn btn-success btn-sm" onclick="openEditModal(${expenditure.id},'${expenditure.date}', ${expenditure.account_id}, ${expenditure.category_id}, '${expenditure.amount}', '${expenditure.description}')">
                             <i class="fa fa-edit"></i>
                         </button>
                         <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteExpenditureModal"  onclick="openDeleteModal(${expenditure.id})">

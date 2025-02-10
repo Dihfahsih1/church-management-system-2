@@ -72,8 +72,75 @@
     <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
 
    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
-    
+
+    <script>
+    function exportToExcel(tableID) {
+        let table = document.getElementById(tableID);
+
+        // Check if the table exists
+        if (!table) {
+            console.error("Table with ID '" + tableID + "' not found.");
+            return;
+        }
+
+        let wb = XLSX.utils.book_new();
+        let ws_data = [];
+
+        // Extract table headers excluding the last column (Actions)
+        let headers = [];
+        let ths = table.querySelectorAll("thead th");
+        ths.forEach((th, index) => {
+            if (index !== ths.length - 1) { // Ignore last column
+                headers.push(th.innerText);
+            }
+        });
+        ws_data.push(headers);
+
+        // Extract table rows excluding the last column (Actions)
+        let rows = table.querySelectorAll("tbody tr");
+        rows.forEach(row => {
+            let rowData = [];
+            let tds = row.querySelectorAll("td");
+            tds.forEach((td, index) => {
+                if (index !== tds.length - 1) { // Ignore last column
+                    rowData.push(td.innerText);
+                }
+            });
+            ws_data.push(rowData);
+        });
+
+        // Create worksheet
+        let ws = XLSX.utils.aoa_to_sheet(ws_data);
+
+        // Apply bold formatting to headers
+        let range = XLSX.utils.decode_range(ws['!ref']);
+        for (let C = range.s.c; C <= range.e.c; ++C) {
+            let cell_address = XLSX.utils.encode_cell({ r: 0, c: C });
+            if (ws[cell_address]) {
+                ws[cell_address].s = { font: { bold: true } }; // Apply bold to header
+            }
+        }
+
+        XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
+
+        // Generate filename with page title and current timestamp
+        let pageTitle = document.title.replace(/\s+/g, '-'); // Replace spaces with dashes
+        let now = new Date();
+        let timestamp = now.getFullYear() + "-" + 
+                        String(now.getMonth() + 1).padStart(2, '0') + "-" + 
+                        String(now.getDate()).padStart(2, '0') + "-" + 
+                        String(now.getHours()).padStart(2, '0') + "-" + 
+                        String(now.getMinutes()).padStart(2, '0') + "-" + 
+                        String(now.getSeconds()).padStart(2, '0');
+
+        let filename = `${pageTitle}-${timestamp}.xlsx`;
+
+        XLSX.writeFile(wb, filename);
+    }
+
+    </script>
   
 </body>
 </html>
