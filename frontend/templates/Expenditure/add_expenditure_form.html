@@ -77,8 +77,7 @@
                                         <th>Date</th>
                                         <th>Account</th> 
                                         <th>Category</th>
-                                        <th>Amount</th> 
-                                        <th>Description</th>
+                                        <th>Amount</th>  
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -119,7 +118,7 @@
                     </div>
                     <div class="mb-3">
                         <select class="form-control form-select" id="modal_category" required>
-                            <!-- Options will be populated by JS -->
+                                 
                         </select>
                     </div>
                     <div class="mb-3">
@@ -153,7 +152,9 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary"  data-dismiss="modal" aria-label="Close">Cancel</button>
-                <button type="button" class="btn btn-danger" onclick="deleteExpenditure()">Delete</button>
+                <button type="button" class="btn btn-danger" onclick="deleteExpenditure()">
+                    <i class="fa fa-trash"></i>
+                </button>
             </div>
         </div>
     </div>
@@ -202,8 +203,8 @@ function loadAccounts(selectedAccountId = null, callback = null) {
         .then(response => response.json())
         .then(data => { 
 
-            let accountDropdown = document.getElementById('account'); // Main form
-            let modalAccountDropdown = document.getElementById('modal_account'); // Modal form
+            let accountDropdown = document.getElementById('account');  
+            let modalAccountDropdown = document.getElementById('modal_account');  
             
             // Reset dropdowns
             accountDropdown.innerHTML = '<option value="">Select Account</option>';
@@ -230,14 +231,13 @@ function loadAccounts(selectedAccountId = null, callback = null) {
 }
 
 
-// Function to load expenditure categories and populate both the main form and the modal
 function loadExpenditureCategories(selectedCategoryId = null, callback = null) {
     fetch('http://127.0.0.1:8000/api/expenditure-category/list/')  
         .then(response => response.json())
         .then(data => { 
 
-            let categoryDropdown = document.getElementById('category'); // Main form
-            let modalCategoryDropdown = document.getElementById('modal_category'); // Modal form
+            let categoryDropdown = document.getElementById('category');  
+            let modalCategoryDropdown = document.getElementById('modal_category');  
 
             // Reset dropdowns
             categoryDropdown.innerHTML = '<option value="">Select Category</option>';
@@ -296,7 +296,6 @@ function openEditModal(id, date, accountId, categoryId, amount, description) {
 }
 
 
-// Update the expenditure
 document.getElementById('modalExpenditureForm').addEventListener('submit', function(event) {
     event.preventDefault();
 
@@ -353,16 +352,14 @@ function loadExpenditures() {
                     <td>${expenditure.date}</td>
                     <td>${expenditure.account_name}</td>  
                     <td>${expenditure.category_name}</td> 
-                    <td>${expenditure.amount}</td>  
-                    <td>${expenditure.description}</td>  
+                    <td>${expenditure.amount}</td>   
                     <td> 
-                        <button class="btn btn-success btn-sm" onclick="openEditModal(${expenditure.id},'${expenditure.date}', ${expenditure.account_id}, ${expenditure.category_id}, '${expenditure.amount}', '${expenditure.description}')">
-                            Edit
+                        <button class="btn btn-success btn-sm" onclick="openEditModal(${expenditure.id},'${expenditure.date}', ${expenditure.account_id}, ${expenditure.category_id}, '${expenditure.amount}')">
+                            <i class="fa fa-edit"></i>
                         </button>
                         <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteExpenditureModal"  onclick="openDeleteModal(${expenditure.id})">
-                            Delete
+                            <i class="fa fa-trash"></i>
                         </button>
-
                     </td>
                 </tr>`;
             tableBody.innerHTML += row;
@@ -403,12 +400,8 @@ function deleteExpenditure() {
             messageDiv.innerHTML = `<div class="alert alert-danger">${data.message}</div>`;
             messageDiv.style.display = 'block';
 
-            // Hide modal
             $('#deleteExpenditureModal').click();  
-            // Reload expenditures table
             loadExpenditures();
-
-            // Hide success message after 5 seconds
             setTimeout(() => {
                 $('#responseMessage').fadeOut('fast');
             }, 5000);
