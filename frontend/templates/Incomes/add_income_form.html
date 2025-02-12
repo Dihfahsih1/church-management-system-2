@@ -129,6 +129,30 @@
     </div>
 </div>
 
+<!--Delete confirmation Modal -->
+<div class="modal fade" id="deleteExpenditureModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete this income?,,
+                <input type="hidden" id="delete_expenditure_id">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary"  data-dismiss="modal" aria-label="Close">Cancel</button>
+                <button type="button" class="btn btn-danger" onclick="deleteExpenditure()">
+                    <i class="fa fa-trash"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
 
 // handle income creation form submission
@@ -330,8 +354,12 @@ function loadIncomes() {
                     <td>${income.category_name}</td> 
                     <td>${income.amount}</td>  
                     <td> 
-                        <button class="btn btn-warning btn-sm" onclick="openEditModal(${income.id}, ${income.account_id}, ${income.category_id}, ${income.amount}, '${income.description}')">
-                            Edit
+                        <button class="btn btn-success btn-sm" onclick="openEditModal(${income.id}, ${income.account_id}, ${income.category_id}, ${income.amount}, '${income.description}')">
+                            <i class="fa fa-edit"></i>
+                        </button>
+
+                        <button class="btn btn-danger btn-sm" onclick="openDeleteModal(${income.id})">
+                            <i class="fa fa-trash"></i>
                         </button>
                     </td>
                 </tr>`;
