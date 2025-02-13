@@ -76,7 +76,7 @@ cd church-financial-management
 ### **3. Create Virtual Environment & Install Dependencies**
 ```bash
 python -m venv venv
-source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+source venv/bin/activate   
 pip install -r requirements.txt
 ```
 
@@ -92,7 +92,7 @@ ALLOWED_HOSTS=127.0.0.1,localhost
 ### **5. Run Database Migrations**
 ```bash
 python manage.py migrate
-python manage.py createsuperuser  # Create an admin user
+python manage.py createsuperuser   
 ```
 
 ### **6. Run the Development Server**
@@ -149,5 +149,5 @@ This project is licensed under the MIT License.
 
 ## Contact & Support
 - **Email**: support@churchfinance.com
-- **Website**: [churchfinance.com](http://churchfinance.com)
+- **Website**: [uccbwaise.org](#)
 - **GitHub Issues**: Open an issue for bug reports and feature requests
