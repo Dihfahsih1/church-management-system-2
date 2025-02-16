@@ -130,7 +130,7 @@
 </div>
 
 <!--Delete confirmation Modal -->
-<div class="modal fade" id="deleteExpenditureModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+<div class="modal fade" id="deleteIncomeModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -141,11 +141,11 @@
             </div>
             <div class="modal-body">
                 Are you sure you want to delete this income?,,
-                <input type="hidden" id="delete_expenditure_id">
+                <input type="hidden" id="delete_income_id">
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary"  data-dismiss="modal" aria-label="Close">Cancel</button>
-                <button type="button" class="btn btn-danger" onclick="deleteExpenditure()">
+                <button type="button" class="btn btn-danger" onclick="deleteIncome()">
                     <i class="fa fa-trash"></i>
                 </button>
             </div>
@@ -372,15 +372,15 @@ function loadIncomes() {
 
 // Function to Open Delete Confirmation Modal
 function openDeleteModal(id) {
-    document.getElementById('delete_expenditure_id').value = id;
-    let modal = new bootstrap.Modal(document.getElementById('deleteExpenditureModal'));
+    document.getElementById('delete_income_id').value = id;
+    let modal = new bootstrap.Modal(document.getElementById('deleteIncomeModal'));
     modal.show();
 }
 
-// Function to Delete Expenditure
-function deleteExpenditure() {
-    let expenditureId = document.getElementById('delete_expenditure_id').value;
-    let url = 'http://127.0.0.1:8000/api/expenditures/delete/';
+// Function to Delete Income
+function deleteIncome() {
+    let incomeId = document.getElementById('delete_income_id').value;
+    let url = 'http://127.0.0.1:8000/api/incomes/delete/';
 
     fetch(url, {
         method: 'POST',
@@ -388,11 +388,11 @@ function deleteExpenditure() {
             'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ id: expenditureId })
+        body: JSON.stringify({ id: incomeId })
     })
     .then(response => {
         if (response.status === 204) {
-            return { message: "Expenditure deleted successfully" };
+            return { message: "Income deleted successfully" };
         }
         return response.json();
     })
@@ -402,8 +402,8 @@ function deleteExpenditure() {
             messageDiv.innerHTML = `<div class="alert alert-danger">${data.message}</div>`;
             messageDiv.style.display = 'block';
 
-            $('#deleteExpenditureModal').click();  
-            loadExpenditures();
+            $('#deleteIncomeModal').click();  
+            loadIncomes();
             setTimeout(() => {
                 $('#responseMessage').fadeOut('fast');
             }, 5000);
@@ -415,8 +415,8 @@ function deleteExpenditure() {
     .catch(error => console.error('Error:', error));
 }
 
-document.getElementById('deleteExpenditureModal').addEventListener('hidden.bs.modal', function () {
-    loadExpenditures();
+document.getElementById('deleteIncomeModal').addEventListener('hidden.bs.modal', function () {
+    loadIncomes();
     $('#responseMessage').fadeOut('fast');
 });
 
