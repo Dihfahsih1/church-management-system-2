@@ -369,6 +369,57 @@ function loadIncomes() {
     .catch(error => console.error('Error loading incomes:', error));
 }
 
+
+// Function to Open Delete Confirmation Modal
+function openDeleteModal(id) {
+    document.getElementById('delete_expenditure_id').value = id;
+    let modal = new bootstrap.Modal(document.getElementById('deleteExpenditureModal'));
+    modal.show();
+}
+
+// Function to Delete Expenditure
+function deleteExpenditure() {
+    let expenditureId = document.getElementById('delete_expenditure_id').value;
+    let url = 'http://127.0.0.1:8000/api/expenditures/delete/';
+
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ id: expenditureId })
+    })
+    .then(response => {
+        if (response.status === 204) {
+            return { message: "Expenditure deleted successfully" };
+        }
+        return response.json();
+    })
+    .then(data => {
+        let messageDiv = document.getElementById('responseMessage');
+        if (data.message) {
+            messageDiv.innerHTML = `<div class="alert alert-danger">${data.message}</div>`;
+            messageDiv.style.display = 'block';
+
+            $('#deleteExpenditureModal').click();  
+            loadExpenditures();
+            setTimeout(() => {
+                $('#responseMessage').fadeOut('fast');
+            }, 5000);
+        } else {
+            messageDiv.innerHTML = `<div class="alert alert-danger">Error: ${data.error}</div>`;
+            messageDiv.style.display = 'block';
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+document.getElementById('deleteExpenditureModal').addEventListener('hidden.bs.modal', function () {
+    loadExpenditures();
+    $('#responseMessage').fadeOut('fast');
+});
+
 // Load data on page load
 document.addEventListener('DOMContentLoaded', function() {
     loadIncomes();
