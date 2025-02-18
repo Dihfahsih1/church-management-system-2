@@ -31,27 +31,35 @@
                             <form id="IncomeForm">
                                 <input type="hidden" id="income_id">
                                 {% csrf_token %}
-                                <div class="input-group date">
-                                    <input type="date" class="form-control" id="date"> 
+                                <div class="mb-3"> 
+                                    <i>Date</i>
+                                    <div class="input-group date">
+                                        <input type="date" class="form-control" id="date"> 
+                                    </div>
                                 </div>
 
                                 
                                 <div class="mb-3"> 
+                                    <i>Account</i>
                                     <select class="form-select form-control" id="account" required>
                                         <option value="">Select Account</option>
                                         <!-- Options will be populated by JS -->
                                     </select>
                                 </div>
                                 <div class="mb-3">
+                                    <i>Category</i>
                                     <select class="form-select form-control" id="category" required>
                                         <option value="">Select category</option>
                                         <!-- Options will be populated by JS -->
                                     </select>
                                 </div>
                                 <div class="mb-3">
+                                    <i>Amount</i>
                                     <input type="number" class="form-control" id="amount" placeholder="Enter Amount" required>
                                 </div>
+                                
                                 <div class="mb-3"> 
+                                    <i>Naration</i>
                                     <input type="text" class="form-control" id="description" placeholder="Enter Income Narration" required>
                                 </div>
 
@@ -111,23 +119,28 @@
                     
 
                     <div class="mb-3">
+                        <i>Date</i>
                         <input type="date" class="form-control" id="modal_date" required>
                     </div>
 
                     <div class="mb-3"> 
+                        <i>Account</i>
                         <select class="form-control form-select" id="modal_account" required> 
                             <!-- Options will be populated by JS -->
                         </select>
                     </div>
                     <div class="mb-3">
+                        <i>Category</i>
                         <select class="form-control form-select" id="modal_category" required>
                             <!-- Options will be populated by JS -->
                         </select>
                     </div>
                     <div class="mb-3">
+                        <i>Amount</i>
                         <input type="number" class="form-control" id="modal_amount" placeholder="Enter Amount" required>
                     </div>
                     <div class="mb-3"> 
+                        <i>Naration</i>
                         <input type="text" class="form-control" id="modal_description" placeholder="Enter Income Narration" required>
                     </div>
                     <div class="d-grid gap-2">
