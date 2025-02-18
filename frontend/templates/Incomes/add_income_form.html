@@ -276,13 +276,14 @@ function loadIncomeCategories(selectedCategoryId = null, callback = null) {
         .catch(error => console.error('Error loading categories:', error));
 }
 function openEditModal(id,date, accountId, categoryId, amount, description) {
-    console.log("Opening edit modal with:", { id, accountId, categoryId, amount, description });
+    console.log("Opening edit modal with:", { id, date, accountId, categoryId, amount, description });
 
     // Set input values in the modal
     document.getElementById('modal_income_id').value = id;
+    document.getElementById('modal_date').value = date;
     document.getElementById('modal_amount').value = amount;
     document.getElementById('modal_description').value = description;
-    document.getElementById('modal_date').value = date;
+    
 
     // Load accounts and preselect the correct one
     loadAccounts(accountId, () => {
@@ -369,7 +370,7 @@ function loadIncomes() {
                     <td>${income.category_name}</td> 
                     <td>${income.amount}</td>  
                     <td> 
-                        <button class="btn btn-success btn-sm" onclick="openEditModal(${income.id}, ${income.account_id}, ${income.category_id},${income.date}, ${income.amount}, '${income.description}')">
+                        <button class="btn btn-success btn-sm" onclick="openEditModal(${income.id},'${income.date}', ${income.account_id}, ${income.category_id}, ${income.amount}, '${income.description}')">
                             <i class="fa fa-edit"></i>
                         </button>
 
