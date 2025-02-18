@@ -3,10 +3,13 @@ from .views import  create_account_type, delete_account_type, list_account_types
                     create_income, retrieve_income, update_account_type, update_income, delete_income,\
                     create_expenditure,retrieve_expenditure,update_expenditure,delete_expenditure, \
                     create_income_category, retrieve_income_category, update_income_category, delete_income_category, \
-                    create_expenditure_category, retrieve_expenditure_category, update_expenditure_category, delete_expenditure_category
-
+                    create_expenditure_category, retrieve_expenditure_category, update_expenditure_category, delete_expenditure_category, \
+                    register_user, login_user, logout_user
 urlpatterns = [
-    
+    path('accounts/register/', register_user, name='register'),
+    path('accounts/login/', login_user, name='login'),
+    path('accounts/logout/', logout_user, name='logout'),
+
     path("accounts/create/", list_or_create_accounts, name="create_account"),
     path("accounts/retrieve/", retrieve_account, name="retrieve_account"),
     path("accounts/update/", update_account, name="update_account"),

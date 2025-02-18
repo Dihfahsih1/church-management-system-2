@@ -6,6 +6,59 @@ from .serializers import AccountReadSerializer, AccountSerializer, AccountTypeSe
                         IncomeCategorySerializer, ExpenditureCategorySerializer
 
  
+from django.contrib.auth import authenticate
+from django.middleware.csrf import get_token
+from django.http import JsonResponse
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework_simplejwt.tokens import RefreshToken
+from .models import User
+from .serializers import UserSerializer
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def register_user(request):
+    serializer = UserSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return JsonResponse({'message': 'User registered successfully'}, status=201)
+    return JsonResponse(serializer.errors, status=400)
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def login_user(request): 
+    username = request.data.get('username')   
+    password = request.data.get('password')
+    user=User.objects.get(username="dihfahsih")
+    print(user)
+    
+    
+    user = authenticate(request, username=username, password=password)   
+    if user is None:
+        print(user)
+
+    if user is not None:
+        refresh = RefreshToken.for_user(user)
+        return JsonResponse({
+            'access': str(refresh.access_token),
+            'refresh': str(refresh),
+            'csrf_token': get_token(request)   
+        })
+
+    return JsonResponse({'error': 'Invalid credentials'}, status=400)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def logout_user(request):
+    try:
+        refresh_token = request.data["refresh"]
+        token = RefreshToken(refresh_token)
+        token.blacklist()
+        return JsonResponse({'message': 'Successfully logged out'}, status=200)
+    except Exception as e:
+        return JsonResponse({'error': 'Invalid token'}, status=400)
+
+
 ######### INCOME CATEGORY ##########
 
 # Create Income Category

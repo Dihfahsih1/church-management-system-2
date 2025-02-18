@@ -39,3 +39,7 @@ def add_income_form(request):
     return render(request, "Incomes/add_income_form.html")
 
 
+def auth_view(request):
+    return render(request, 'auth.html')
+
+
