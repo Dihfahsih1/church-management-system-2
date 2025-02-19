@@ -8,8 +8,7 @@ from .models import Account, AccountType, Income, Expenditure,IncomeCategory, Ex
 from .serializers import AccountReadSerializer, AccountSerializer, AccountTypeSerializer, AccountWriteSerializer, IncomeSerializer, ExpenditureSerializer, \
                         IncomeCategorySerializer, ExpenditureCategorySerializer
 
- 
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate,login
 from django.middleware.csrf import get_token
 from django.http import JsonResponse
 from rest_framework.decorators import api_view, permission_classes
@@ -27,17 +26,16 @@ def register_user(request):
         return JsonResponse({'message': 'User registered successfully'}, status=201)
     return JsonResponse(serializer.errors, status=400)
 
-@api_view(['POST','GET'])
+@api_view(['POST'])
 @permission_classes([AllowAny])
-def login_user(request): 
+def login_user(request):
     username = request.data.get('username')   
-    password = request.data.get('password')    
-    
-    user = authenticate(request, username=username, password=password)   
-    if user is None:
-        print(user)
+    password = request.data.get('password')
 
+    user = authenticate(request, username=username, password=password)   
     if user is not None:
+        login(request, user)  # This creates the session!
+
         refresh = RefreshToken.for_user(user)
         return JsonResponse({
             'access': str(refresh.access_token),

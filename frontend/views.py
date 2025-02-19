@@ -18,25 +18,31 @@ def dashboard(request):
     total_expenses = Expenditure.objects.filter(date__gte=start_of_week).aggregate(total=Sum('amount')).get('total', Decimal('0.00'))
 
     total_accounts_types = AccountType.objects.count()
-    total_accounts = Account.objects.count()
-
-    return render(request, "dashboard.html", {"total_accounts_types":total_accounts_types,"total_expenses":total_expenses,"total_income":total_income,"total_accounts":total_accounts})
-
+    total_accounts = Account.objects.count() 
+    return render(request, "dashboard.html", {"total_accounts_types":total_accounts_types,"total_expenses":total_expenses,
+                                              "total_income":total_income,"total_accounts":total_accounts
+                                            })
+@permission_classes([IsAuthenticated])
 def create_account_type_form(request):
     return render(request, "Accounts/create_account_type.html")
 
+@permission_classes([IsAuthenticated])
 def create_account_form(request):
     return render(request, "Accounts/create_account_form.html")
 
+@permission_classes([IsAuthenticated])
 def create_income_category_form(request):
     return render(request, "Categories/create_income_category_form.html")
 
+@permission_classes([IsAuthenticated])
 def create_expenditure_category_form(request):
     return render(request, "Categories/create_expenditure_category_form.html")
 
+@permission_classes([IsAuthenticated])
 def add_expenditure_form(request):
     return render(request, "Expenditure/add_expenditure_form.html")
 
+@permission_classes([IsAuthenticated])
 def add_income_form(request):
     return render(request, "Incomes/add_income_form.html")
 
