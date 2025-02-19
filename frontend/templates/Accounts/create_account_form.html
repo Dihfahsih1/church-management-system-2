@@ -172,6 +172,51 @@ function openEditModal(id, name, account_type_id, opening_balance, description) 
     });
 }
 
+//Handle account update
+document.getElementById('modalAccountForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    let accountId = document.getElementById('modal_account_id').value;
+    let name = document.getElementById('modal_name').value;
+    let account_type = parseInt(document.getElementById('modal_account_type').value) || null;  // Convert to int
+    let opening_balance = document.getElementById('modal_opening_balance').value;
+    let description = document.getElementById('modal_description').value;
+ 
+
+    let url = 'http://127.0.0.1:8000/api/accounts/update/';
+    let formData = new FormData();
+    formData.append('id', accountId);
+    formData.append('name', name);
+    formData.append('opening_balance', opening_balance);
+    formData.append('description', description);
+ 
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+    let messageDiv = document.getElementById('responseMessage');
+    if (data.message) {
+        messageDiv.innerHTML = `<div class="alert alert-success">Account Updated Successfully!</div>`;
+        loadAccounts();  
+        setTimeout(() => {
+                $('#responseMessage').fadeOut('fast');
+            }, 5000);
+
+        $('#editAccountModal').click();   
+    } else {
+        messageDiv.innerHTML = `<div class="alert alert-danger">Error: ${JSON.stringify(data)}</div>`;
+    }
+})
+    .catch(error => console.error('Error:', error));
+});
+
+
+
 // Function to load account types and populate dropdowns
 function loadAccountTypes(selectedAccountTypeId = null, callback = null) {
     fetch('http://127.0.0.1:8000/api/accountstypes/list/')
@@ -254,6 +299,7 @@ document.getElementById('accountForm').addEventListener('submit', function(event
             messageDiv.innerHTML = '<div class="alert alert-success">Account Created Successfully!</div>';
             document.getElementById('accountForm').reset();
             loadAccounts(); // Reload table
+            
         } else {
             messageDiv.innerHTML = '<div class="alert alert-danger">Error: ' + JSON.stringify(data) + '</div>';
         }
@@ -261,30 +307,59 @@ document.getElementById('accountForm').addEventListener('submit', function(event
     .catch(error => console.error('Error:', error));
 });
 
+// Function to Open Delete Confirmation Modal
+function openDeleteModal(id) {
+    document.getElementById('delete_account_id').value = id;
+    let modal = new bootstrap.Modal(document.getElementById('deleteAccountModal'));
+    modal.show();
+}
 
 
-// Delete function
-function deleteAccount(id) {
-    if (!confirm("Are you sure you want to delete this account?")) return;
 
-    let csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
-    fetch(`http://127.0.0.1:8000/api/accounts/delete/${id}/`, {
-        method: 'DELETE',
+// Function to Delete Account
+function deleteAccount() {
+    let accountId = document.getElementById('delete_account_id').value;
+    let url = 'http://127.0.0.1:8000/api/accounts/delete/';
+
+    fetch(url, {
+        method: 'POST',
         headers: {
-            'X-CSRFToken': csrfToken
-        }
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ id: accountId })
     })
     .then(response => {
-        if (response.ok) {
-            document.getElementById('responseMessage').innerHTML = '<div class="alert alert-success">Account Deleted Successfully!</div>';
-            loadAccounts(); // Reload table
+        if (response.status === 204) {
+            return { message: "Account deleted successfully" };
+        }
+        return response.json();
+    })
+    .then(data => {
+        let messageDiv = document.getElementById('responseMessage');
+        if (data.message) {
+            messageDiv.innerHTML = `<div class="alert alert-danger">${data.message}</div>`;
+            messageDiv.style.display = 'block';
+
+            $('#deleteAccountModal').click();  
+            loadAccounts();
+            setTimeout(() => {
+                $('#responseMessage').fadeOut('fast');
+            }, 5000);
         } else {
-            document.getElementById('responseMessage').innerHTML = '<div class="alert alert-danger">Error deleting account.</div>';
+            messageDiv.innerHTML = `<div class="alert alert-danger">Error: ${data.error}</div>`;
+            messageDiv.style.display = 'block';
         }
     })
     .catch(error => console.error('Error:', error));
 }
+
+document.getElementById('deleteAccountModal').addEventListener('hidden.bs.modal', function () {
+    loadAccounts();
+    $('#responseMessage').fadeOut('fast');
+});
+
 
 // Load account types and accounts on page load
 document.addEventListener('DOMContentLoaded', function() {
