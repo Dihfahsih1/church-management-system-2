@@ -6,8 +6,10 @@ from accounts.models import Account, AccountType, Income, Expenditure
 from django.utils import timezone
 from datetime import timedelta
 from django.db.models import Sum
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny, IsAuthenticated
 
-
+@permission_classes([IsAuthenticated])
 def dashboard(request):
     today = timezone.localdate()   
     start_of_week = today - timedelta(days=today.weekday()) 

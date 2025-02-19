@@ -1,3 +1,6 @@
+from django.contrib.auth import logout
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
@@ -24,14 +27,11 @@ def register_user(request):
         return JsonResponse({'message': 'User registered successfully'}, status=201)
     return JsonResponse(serializer.errors, status=400)
 
-@api_view(['POST'])
+@api_view(['POST','GET'])
 @permission_classes([AllowAny])
 def login_user(request): 
     username = request.data.get('username')   
-    password = request.data.get('password')
-    user=User.objects.get(username="dihfahsih")
-    print(user)
-    
+    password = request.data.get('password')    
     
     user = authenticate(request, username=username, password=password)   
     if user is None:
@@ -47,17 +47,15 @@ def login_user(request):
 
     return JsonResponse({'error': 'Invalid credentials'}, status=400)
 
-@api_view(['POST'])
+from django.contrib.auth import logout
+from django.shortcuts import redirect
+from django.contrib import messages
+ 
 @permission_classes([IsAuthenticated])
 def logout_user(request):
-    try:
-        refresh_token = request.data["refresh"]
-        token = RefreshToken(refresh_token)
-        token.blacklist()
-        return JsonResponse({'message': 'Successfully logged out'}, status=200)
-    except Exception as e:
-        return JsonResponse({'error': 'Invalid token'}, status=400)
-
+    logout(request)
+    messages.success(request, "You have been logged out successfully.")
+    return redirect('auth')   
 
 ######### INCOME CATEGORY ##########
 
