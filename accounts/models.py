@@ -55,7 +55,7 @@ class AccountType(models.Model):
 # Account Model
 class Account(models.Model):
     name = models.CharField(max_length=255, unique=True)   
-    account_type = models.ForeignKey(AccountType, related_name='accounts', on_delete=models.CASCADE, blank=True, null=True)
+    account_type = models.ForeignKey(AccountType, related_name='accounts', on_delete=models.SET_NULL, blank=True, null=True)
     description = models.TextField(blank=True, null=True)   
     opening_balance = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)   
     date = models.DateField(null=True, blank=True) 
@@ -64,7 +64,7 @@ class Account(models.Model):
 
 # Income Category Model
 class IncomeCategory(models.Model):
-    account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name="income_categories")  
+    account = models.ForeignKey(Account, on_delete=models.SET_NULL, related_name="income_categories",blank=True, null=True)  
     name = models.CharField(max_length=255)   
     description = models.TextField(blank=True, null=True)
     date = models.DateField(null=True, blank=True) 
@@ -77,7 +77,7 @@ class IncomeCategory(models.Model):
 
 # Expenditure Category Model
 class ExpenditureCategory(models.Model):
-    account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name="expenditure_categories")   
+    account = models.ForeignKey(Account, on_delete=models.SET_NULL, related_name="expenditure_categories",  blank=True, null=True)   
     name = models.CharField(max_length=255)   
     description = models.TextField(blank=True, null=True)
     date = models.DateField(null=True, blank=True) 
@@ -90,8 +90,8 @@ class ExpenditureCategory(models.Model):
 
 # Income Model
 class Income(models.Model):
-    account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name="incomes")  
-    category = models.ForeignKey(IncomeCategory, on_delete=models.CASCADE, related_name="incomes")  
+    account = models.ForeignKey(Account, on_delete=models.SET_NULL, related_name="incomes",  blank=True, null=True)  
+    category = models.ForeignKey(IncomeCategory, on_delete=models.SET_NULL, related_name="incomes",  blank=True, null=True)  
     amount = models.DecimalField(max_digits=10, decimal_places=2) 
     date = models.DateField(null=True, blank=True)  
     description = models.TextField(blank=True, null=True)
@@ -101,8 +101,8 @@ class Income(models.Model):
 
 # Expenditure Model
 class Expenditure(models.Model):
-    account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name="expenditures")  
-    category = models.ForeignKey(ExpenditureCategory, on_delete=models.CASCADE, related_name="expenditures")  
+    account = models.ForeignKey(Account, on_delete=models.SET_NULL, related_name="expenditures",  blank=True, null=True) 
+    category = models.ForeignKey(ExpenditureCategory, on_delete=models.SET_NULL, related_name="expenditures",  blank=True, null=True)  
     amount = models.DecimalField(max_digits=10, decimal_places=2)  
     date = models.DateField(null=True, blank=True)  
     description = models.TextField(blank=True, null=True)
