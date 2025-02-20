@@ -246,8 +246,8 @@ function openDeleteModal(id) {
 }
 
 // Function to Delete Account Type
-function deleteAccount() {
-    let accountId = document.getElementById('delete_account_type_id').value;
+function deleteAccountType() {
+    let accountTypeId = document.getElementById('delete_account_type_id').value;
     let url = 'http://127.0.0.1:8000/api/accountstypes/delete/';
 
     fetch(url, {
@@ -256,7 +256,7 @@ function deleteAccount() {
             'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ id: accountId })
+        body: JSON.stringify({ id: accountTypeId })
     })
     .then(response => {
         if (response.status === 204) {
@@ -270,8 +270,8 @@ function deleteAccount() {
             messageDiv.innerHTML = `<div class="alert alert-danger">${data.message}</div>`;
             messageDiv.style.display = 'block';
 
-            $('#deleteAccountModal').click();  
-            loadAccounts();
+            $('#deleteAccountTypeModal').click();  
+            loadAccountTypes();
             setTimeout(() => {
                 $('#responseMessage').fadeOut('fast');
             }, 5000);
