@@ -161,8 +161,6 @@ function openEditModal(id, name, account_type_id, opening_balance, description) 
     loadAccountTypes(account_type_id, () => {
         let accountTypeDropdown = document.getElementById('modal_account_type');
         if (accountTypeDropdown) {
-            console.log("Dropdown options:", accountTypeDropdown.innerHTML);
-            console.log("Setting dropdown value to:", account_type_id);
             accountTypeDropdown.value = account_type_id;
         }
 

@@ -145,7 +145,8 @@ def list_expenditure_categories(request):
         categories_data.append({
             'id': category.id,
             'name': category.name,
-            'account_name': category.account.name if category.account else 'No account',  # Handle missing account
+            'account_name': category.account.name if category.account else 'No account',  
+            'account_id': category.account.id if category.id else 'No account',  
             'description': category.description
         })
     
