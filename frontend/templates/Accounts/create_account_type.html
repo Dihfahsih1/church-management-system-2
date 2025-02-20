@@ -128,6 +128,58 @@
 </div>
 
 <script>
+function openEditModal(id, name, description) { 
+
+    // Set input values in the modal
+    document.getElementById('modal_account_type_id').value = id;
+    document.getElementById('modal_name').value = name || ''; 
+    document.getElementById('modal_description').value = description || '';
+
+    // Initialize and show the Bootstrap modal
+    let myModal = new bootstrap.Modal(document.getElementById('editAccountTypeModal'));
+    myModal.show();
+}
+
+
+//Handle account type update
+document.getElementById('modalAccountTypeForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    let accountTypeId = document.getElementById('modal_account_type_id').value;
+    let name = document.getElementById('modal_name').value;
+    let description = document.getElementById('modal_description').value;
+ 
+
+    let url = 'http://127.0.0.1:8000/api/accountstypes/update/';
+    let formData = new FormData();
+    formData.append('id', accountTypeId);
+    formData.append('name', name);
+    formData.append('description', description);
+ 
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+    let messageDiv = document.getElementById('responseMessage');
+    if (data.message) {
+        messageDiv.innerHTML = `<div class="alert alert-success">Account Type Updated Successfully!</div>`;
+        loadAccountTypes();  
+        setTimeout(() => {
+                $('#responseMessage').fadeOut('fast');
+            }, 5000);
+
+        $('#editAccountTypeModal').click();   
+    } else {
+        messageDiv.innerHTML = `<div class="alert alert-danger">Error: ${JSON.stringify(data)}</div>`;
+    }
+})
+    .catch(error => console.error('Error:', error));
+});
 
 
 function loadAccountTypes() {
@@ -185,7 +237,6 @@ document.getElementById('accountTypeForm').addEventListener('submit', function(e
     })
     .catch(error => console.error('Error:', error));
 });
-
 
 // Function to Open Delete Confirmation Modal
 function openDeleteModal(id) {
