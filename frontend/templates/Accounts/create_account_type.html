@@ -166,7 +166,7 @@ document.getElementById('modalAccountTypeForm').addEventListener('submit', funct
     .then(response => response.json())
     .then(data => {
     let messageDiv = document.getElementById('responseMessage');
-    if (data.message) {
+    if (data.id) {
         messageDiv.innerHTML = `<div class="alert alert-success">Account Type Updated Successfully!</div>`;
         loadAccountTypes();  
         setTimeout(() => {
