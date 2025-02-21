@@ -17,6 +17,48 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from .models import User
 from .serializers import UserSerializer
 
+from django.db.models import Sum
+from django.utils.timezone import now, timedelta
+
+def get_date_range(filter_type):
+    today = now().date()
+    
+    if filter_type == 'daily':
+        start_date, end_date = today, today
+    elif filter_type == 'weekly':
+        start_date, end_date = today - timedelta(days=today.weekday()), today
+    elif filter_type == 'monthly':
+        start_date, end_date = today.replace(day=1), today
+    elif filter_type == 'yearly':
+        start_date, end_date = today.replace(month=1, day=1), today
+    else:
+        return None, None  # Invalid filter type
+    
+    return start_date, end_date
+
+@api_view(['GET'])
+def report_summary(request):
+    filter_type = request.GET.get('filter', 'daily')  # Default to daily
+    start_date, end_date = get_date_range(filter_type)
+
+    if start_date is None:
+        return Response({"error": "Invalid filter type"}, status=400)
+
+    # Aggregate Income
+    total_income = Income.objects.filter(date__range=[start_date, end_date]).aggregate(total=Sum('amount'))['total'] or 0.00
+    
+    # Aggregate Expenditure
+    total_expenditure = Expenditure.objects.filter(date__range=[start_date, end_date]).aggregate(total=Sum('amount'))['total'] or 0.00
+    
+    return Response({
+        "filter_type": filter_type,
+        "start_date": start_date,
+        "end_date": end_date,
+        "total_income": total_income,
+        "total_expenditure": total_expenditure,
+        "net_balance": total_income - total_expenditure
+    })
+
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def register_user(request):
