@@ -90,7 +90,8 @@ def list_income_categories(request):
         categories_data.append({
             'id': category.id,
             'name': category.name,
-            'account_name': category.account.name if category.account else 'No account',  # Handle missing account
+            'account_name': category.account.name if category.account else 'No account',  
+            'account_id': category.account.id if category.account else 'No account', 
             'description': category.description
         })
     
@@ -133,7 +134,7 @@ def create_expenditure_category(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-# List of income categories 
+# List of Expenditure categories 
 @api_view(['GET'])
 def list_expenditure_categories(request):
     # Fetch all categories and related account data using select_related to optimize query
@@ -146,7 +147,7 @@ def list_expenditure_categories(request):
             'id': category.id,
             'name': category.name,
             'account_name': category.account.name if category.account else 'No account',  
-            'account_id': category.account.id if category.id else 'No account',  
+            'account_id': category.account.id if category.account else 'No account',  
             'description': category.description
         })
     

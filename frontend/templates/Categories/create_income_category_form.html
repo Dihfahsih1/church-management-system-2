@@ -81,25 +81,168 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="editCategoryModal" tabindex="-1" aria-labelledby="editCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editCategoryModalLabel">Edit Category</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="modalCategoryForm" method="POST">
+                    <input type="hidden" id="modal_category_id">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <input type="text" class="form-control" id="modal_name" required>
+                    </div>
+                    <div class="mb-3">
+                        <select class="form-control form-select" id="modal_account" required>
+                            <!-- Options will be populated by JavaScript -->
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <input type="text" class="form-control" id="modal_description" required>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" id="modalSubmitButton" class="btn btn-success">Update</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Delete confirmation Modal -->
+<div class="modal fade" id="deleteCategoryModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete this Category?
+                <input type="hidden" id="delete_category_id">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary"  data-dismiss="modal" aria-label="Close">Cancel</button>
+                <button type="button" class="btn btn-danger" onclick="deleteCategory()">
+                    <i class="fa fa-trash"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
-// Function to fetch accounts and populate select field
-// Function to fetch accounts and populate select field
-function loadAccount() {
-    fetch('http://127.0.0.1:8000/api/accounts/list/')
+// Function to load accounts and populate both the main form and the modal
+function loadAccounts(selectedAccountId = null, callback = null) {  
+    fetch('http://127.0.0.1:8000/api/accounts/list/')  
+        .then(response => response.json())
+        .then(data => { 
+
+            let accountDropdown = document.getElementById('account');  
+            let modalAccountDropdown = document.getElementById('modal_account');  
+            
+            // Reset dropdowns
+            accountDropdown.innerHTML = '<option value="">Select Account</option>';
+            modalAccountDropdown.innerHTML = '<option value="">Select Account</option>';
+
+            data.forEach(account => {
+                let option = `<option value="${account.id}">${account.name}</option>`;
+                accountDropdown.innerHTML += option; 
+                modalAccountDropdown.innerHTML += option;
+            });
+
+            // Preselect account if provided
+            if (selectedAccountId) {
+                accountDropdown.value = selectedAccountId;
+                modalAccountDropdown.value = selectedAccountId;
+            }
+
+            // Execute callback if provided
+            if (callback) {
+                callback();
+            }
+        }) 
+        .catch(error => console.error('Error loading accounts:', error));
+}
+
+
+function openEditModal(id,name, accountId, description) {
+     
+     // Set input values in the modal
+     document.getElementById('modal_category_id').value = id; 
+     document.getElementById('modal_name').value = name; 
+     document.getElementById('modal_description').value = description;
+     // Load accounts and preselect the correct one 
+    loadAccounts(accountId, () => {
+        // Ensure the accounts are loaded before setting the dropdown value
+        let accountDropdown = document.getElementById('modal_account');
+        
+        // Check if the accountId exists in the dropdown options
+        let optionExists = [...accountDropdown.options].some(option => option.value == accountId);
+        if (optionExists) {
+            accountDropdown.value = accountId;
+        } else {
+            console.warn(`Account ID ${accountId} not found in dropdown options.`);
+        }
+    });
+  
+ 
+     // Initialize and show the Bootstrap modal
+     let myModal = new bootstrap.Modal(document.getElementById('editCategoryModal'), {});
+     myModal.show();
+ }
+ 
+ //Handle category update
+ document.getElementById('modalCategoryForm').addEventListener('submit', function(event) {
+     event.preventDefault();
+ 
+     let categoryId = document.getElementById('modal_category_id').value;
+     let account = document.getElementById('modal_account').value; 
+     let category = document.getElementById('modal_name').value; 
+     let description = document.getElementById('modal_description').value; 
+ 
+     let url = 'http://127.0.0.1:8000/api/income-category/update/';
+     let formData = new FormData();
+     formData.append('id', categoryId);
+     formData.append('account', account); 
+     formData.append('category', category); 
+     formData.append('description', description);
+ 
+     fetch(url, {
+         method: 'POST', 
+         headers: {
+             'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+         },
+         body: formData
+     })
     .then(response => response.json())
     .then(data => {
-        let selectField = document.getElementById('account');
-        selectField.innerHTML = '<option value="">Select Account</option>'; // Clear existing options
-        data.forEach(account => {
-            let option = document.createElement('option');
-            option.value = account.id;
-            option.textContent = account.name;
-            selectField.appendChild(option);
-        });
+        let messageDiv = document.getElementById('responseMessage');
+        if (data.id) {
+            messageDiv.innerHTML = `<div class="alert alert-success">Income Category Updated Successfully!</div>`;
+            messageDiv.style.display = 'block';
+            loadCategories();
+            setTimeout(() => {
+                $('#responseMessage').fadeOut('fast');
+            }, 5000);
+            $('#editCategoryModal').click();  
+            
+        } else {
+            messageDiv.innerHTML = `<div class="alert alert-success">Error: ${data.error}</div>`;
+            messageDiv.style.display = 'block';
+        }
     })
-    .catch(error => console.error('Error loading accounts:', error));
-}
+     
+     .catch(error => console.error('Error:', error));
+ });
+
 
 function loadCategories() {
     fetch('http://127.0.0.1:8000/api/income-category/list/')
@@ -108,19 +251,19 @@ function loadCategories() {
         let tableBody = document.getElementById('CategoriesTableBody');
         tableBody.innerHTML = ''; // Clear existing table rows
         data.forEach(category => {
-            // Access account_name directly from the response
-            let accountName = category.account_name || 'No account';  // Handle missing account
 
+             
             let row = 
                 `<tr>
                     <td>${category.name}</td>
-                    <td>${accountName}</td>   
+                    <td>${category.account_name}</td>  
+                    <td>${category.description}</td>    
                     <td>
-                        <button class="btn btn-warning btn-sm" onclick="editCategory(${category.id}, '${category.name}', '${category.account_id || ''}', '${category.description}')">
-                            <i class="la la-pencil"></i>
+                        <button class="btn btn-success btn-sm" onclick="openEditModal(${category.id}, '${category.name}', ${category.account_id}, '${category.description}')">
+                            <i class="fa fa-edit"></i>
                         </button>
-                        <button class="btn btn-danger btn-sm" onclick="deleteCategory(${category.id})">
-                            <i class="la la-trash"></i>
+                        <button class="btn btn-danger btn-sm" data-target="#deleteCategoryModal" onclick="openDeleteModal(${category.id})">
+                            <i class="fa fa-trash"></i>
                         </button>
                     </td>
                 </tr>`;
@@ -151,7 +294,7 @@ document.getElementById('categoryForm').addEventListener('submit', function(even
     .then(data => {
         let messageDiv = document.getElementById('responseMessage');
         if (data.id) {
-            messageDiv.innerHTML = '<div class="alert alert-success">Category Created Successfully!</div>';
+            messageDiv.innerHTML = '<div class="alert alert-success">Income Category Created Successfully!</div>';
             document.getElementById('categoryForm').reset();
             loadCategories(); // Fix: Reload categories, not accounts
         } else {
@@ -175,7 +318,7 @@ function deleteCategory(id) {
     })
     .then(response => {
         if (response.ok) {
-            document.getElementById('responseMessage').innerHTML = '<div class="alert alert-success">Category Deleted Successfully!</div>';
+            document.getElementById('responseMessage').innerHTML = '<div class="alert alert-success">Income Category Deleted Successfully!</div>';
             loadCategories(); // Fix: Reload categories, not accounts
         } else {
             document.getElementById('responseMessage').innerHTML = '<div class="alert alert-danger">Error deleting Category.</div>';
@@ -184,10 +327,66 @@ function deleteCategory(id) {
     .catch(error => console.error('Error:', error));
 }
 
+
+
+// Function to Open Delete Confirmation Modal
+function openDeleteModal(id) {
+    document.getElementById('delete_category_id').value = id;
+    let modal = new bootstrap.Modal(document.getElementById('deleteCategoryModal'));
+    modal.show();
+}
+
+
+
+
+// Function to Delete Category
+function deleteCategory() {
+    let categoryId = document.getElementById('delete_category_id').value;
+    let url = 'http://127.0.0.1:8000/api/income-category/delete/';
+
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ id: categoryId })
+    })
+    .then(response => {
+        if (response.status === 204) {
+            return { message: "Income Category deleted successfully" };
+        }
+        return response.json();
+    })
+    .then(data => {
+        let messageDiv = document.getElementById('responseMessage');
+        if (data.message) {
+            messageDiv.innerHTML = `<div class="alert alert-danger">${data.message}</div>`;
+            messageDiv.style.display = 'block';
+
+            $('#deleteCategoryModal').click();  
+            loadCategories();
+            setTimeout(() => {
+                $('#responseMessage').fadeOut('fast');
+            }, 5000);
+        } else {
+            messageDiv.innerHTML = `<div class="alert alert-danger">Error: ${data.error}</div>`;
+            messageDiv.style.display = 'block';
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+document.getElementById('deleteCategoryModal').addEventListener('hidden.bs.modal', function () {
+    loadCategories();
+    $('#responseMessage').fadeOut('fast');
+});
+
 // Load data on page load
 document.addEventListener('DOMContentLoaded', function() {
+    
+    loadAccounts(); // Fix function name
     loadCategories();
-    loadAccount(); // Fix function name
 });
 </script>
 {% endblock %}
