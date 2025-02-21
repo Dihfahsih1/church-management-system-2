@@ -223,18 +223,24 @@ function openEditModal(id,name, accountId, description) {
          },
          body: formData
      })
-     .then(response => response.json())
-     .then(data => {
-         let messageDiv = document.getElementById('responseMessage');
-         if (data.id) {
-             messageDiv.innerHTML = `<div class="alert alert-success">Category Updated Successfully!</div>`;
-             loadCategories();
-  
-             $('#editCategoryModal').click();  
-         } else {
-             messageDiv.innerHTML = `<div class="alert alert-danger">Error: ${JSON.stringify(data)}</div>`;
-         }
-     })
+    .then(response => response.json())
+    .then(data => {
+        let messageDiv = document.getElementById('responseMessage');
+        if (data.id) {
+            messageDiv.innerHTML = `<div class="alert alert-success">Category Updated Successfully!</div>`;
+            messageDiv.style.display = 'block';
+            loadCategories();
+            setTimeout(() => {
+                $('#responseMessage').fadeOut('fast');
+            }, 5000);
+            $('#editCategoryModal').click();  
+            
+        } else {
+            messageDiv.innerHTML = `<div class="alert alert-success">Error: ${data.error}</div>`;
+            messageDiv.style.display = 'block';
+        }
+    })
+     
      .catch(error => console.error('Error:', error));
  });
 
@@ -321,6 +327,61 @@ function deleteCategory(id) {
     })
     .catch(error => console.error('Error:', error));
 }
+
+
+
+// Function to Open Delete Confirmation Modal
+function openDeleteModal(id) {
+    document.getElementById('delete_category_id').value = id;
+    let modal = new bootstrap.Modal(document.getElementById('deleteCategoryModal'));
+    modal.show();
+}
+
+
+
+
+// Function to Delete Category
+function deleteCategory() {
+    let categoryId = document.getElementById('delete_category_id').value;
+    let url = 'http://127.0.0.1:8000/api/expenditure-category/delete/';
+
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ id: categoryId })
+    })
+    .then(response => {
+        if (response.status === 204) {
+            return { message: "Category deleted successfully" };
+        }
+        return response.json();
+    })
+    .then(data => {
+        let messageDiv = document.getElementById('responseMessage');
+        if (data.message) {
+            messageDiv.innerHTML = `<div class="alert alert-danger">${data.message}</div>`;
+            messageDiv.style.display = 'block';
+
+            $('#deleteCategoryModal').click();  
+            loadCategories();
+            setTimeout(() => {
+                $('#responseMessage').fadeOut('fast');
+            }, 5000);
+        } else {
+            messageDiv.innerHTML = `<div class="alert alert-danger">Error: ${data.error}</div>`;
+            messageDiv.style.display = 'block';
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+document.getElementById('deleteCategoryModal').addEventListener('hidden.bs.modal', function () {
+    loadCategories();
+    $('#responseMessage').fadeOut('fast');
+});
 
 // Load data on page load
 document.addEventListener('DOMContentLoaded', function() {
