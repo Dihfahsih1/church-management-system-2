@@ -15,30 +15,61 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import User
+from django.utils import timezone
 from .serializers import UserSerializer
 
 from django.db.models import Sum
 from django.utils.timezone import now, timedelta
 
-def get_date_range(filter_type):
-    today = now().date()
-    
-    if filter_type == 'daily':
-        start_date, end_date = today, today
-    elif filter_type == 'weekly':
-        start_date, end_date = today - timedelta(days=today.weekday()), today
-    elif filter_type == 'monthly':
-        start_date, end_date = today.replace(day=1), today
-    elif filter_type == 'yearly':
-        start_date, end_date = today.replace(month=1, day=1), today
+def get_date_range(date_filter):
+    """Determine the start and end date based on the date filter."""
+    today = timezone.now().date()
+
+    if date_filter == 'daily':
+        start_date = end_date = today
+    elif date_filter == 'weekly':
+        start_date = today - timedelta(days=today.weekday())  # Monday of this week
+        end_date = today
+    elif date_filter == 'monthly':
+        start_date = today.replace(day=1)  # First day of the month
+        end_date = today
+    elif date_filter == 'yearly':
+        start_date = today.replace(month=1, day=1)  # First day of the year
+        end_date = today
     else:
-        return None, None  # Invalid filter type
-    
+        return None, None  # Invalid filter
+
     return start_date, end_date
 
 @api_view(['GET'])
+def filter_income(request):
+    """Filter income records based on date range."""
+    date_filter = request.GET.get('date_filter', 'daily')  # Default to daily
+    start_date, end_date = get_date_range(date_filter)
+
+    if not start_date:
+        return Response({"error": "Invalid date filter"}, status=400)
+
+    incomes = Income.objects.filter(date__range=[start_date, end_date])
+    serializer = IncomeSerializer(incomes, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def filter_expenditure(request):
+    """Filter expenditure records based on date range."""
+    date_filter = request.GET.get('date_filter', 'daily')
+    start_date, end_date = get_date_range(date_filter)
+
+    if not start_date:
+        return Response({"error": "Invalid date filter"}, status=400)
+
+    expenditures = Expenditure.objects.filter(date__range=[start_date, end_date])
+    serializer = ExpenditureSerializer(expenditures, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
 def report_summary(request):
-    filter_type = request.GET.get('filter', 'daily')  # Default to daily
+    filter_type = request.GET.get('filter', 'daily')   
     start_date, end_date = get_date_range(filter_type)
 
     if start_date is None:

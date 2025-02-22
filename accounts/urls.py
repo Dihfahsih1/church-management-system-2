@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import  create_account_type, delete_account_type, list_account_types, list_expenditure, list_expenditure_categories, list_income_categories, list_incomes, list_or_create_accounts, retrieve_account, retrieve_account_type, update_account, delete_account,\
+from .views import  create_account_type, delete_account_type, filter_expenditure, filter_income, list_account_types, list_expenditure, list_expenditure_categories, list_income_categories, list_incomes, list_or_create_accounts, report_summary, retrieve_account, retrieve_account_type, update_account, delete_account,\
                     create_income, retrieve_income, update_account_type, update_income, delete_income,\
                     create_expenditure,retrieve_expenditure,update_expenditure,delete_expenditure, \
                     create_income_category, retrieve_income_category, update_income_category, delete_income_category, \
@@ -28,25 +28,30 @@ urlpatterns = [
     path("incomes/delete/", delete_income, name="delete_income"),
     path("incomes/list/", list_incomes, name="list_incomes"),
 
+    
     path("expenditures/create/", create_expenditure, name="create_expenditure"),
     path("expenditures/retrieve/", retrieve_expenditure, name="retrieve_expenditure"),
     path("expenditures/update/", update_expenditure, name="update_expenditure"),
     path("expenditures/delete/", delete_expenditure, name="delete_expenditure"),
     path("expenditures/list/", list_expenditure, name="list_expenditures"),
 
-     # Income Category
+    # Income Category
     path("income-category/create/", create_income_category, name="create_income_category"),
     path("income-category/retrieve/", retrieve_income_category, name="retrieve_income_category"),
     path("income-category/update/", update_income_category, name="update_income_category"),
     path("income-category/delete/", delete_income_category, name="delete_income_category"),
     path("income-category/list/", list_income_categories, name="list_income_categories"),
     
-
     # Expenditure Category
     path("expenditure-category/create/", create_expenditure_category, name="create_expenditure_category"),
     path("expenditure-category/retrieve/", retrieve_expenditure_category, name="retrieve_expenditure_category"),
     path("expenditure-category/update/", update_expenditure_category, name="update_expenditure_category"),
     path("expenditure-category/delete/", delete_expenditure_category, name="delete_expenditure_category"),
     path("expenditure-category/list/", list_expenditure_categories, name="list_expenditure_categories"),
+
+    #Summary Reports
+    path('reports/', report_summary, name='report-summary'),
+    path('api/income/', filter_income, name='filter_income'),
+    path('api/expenditure/', filter_expenditure, name='filter_expenditure'),
  
 ]
