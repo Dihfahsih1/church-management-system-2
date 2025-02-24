@@ -5,11 +5,11 @@
 <style>
     .export-icon {
         cursor: pointer;
-        color: #198754; /* Green Excel-like color */
+        color: #198754;  
         font-size: 1.5rem;
     }
     .export-icon:hover {
-        color: #145c32; /* Darker green */
+        color: #145c32;  
     }
 </style>
 
@@ -31,8 +31,7 @@
                                 </div>
                                 <div class="mb-3">
                                     <select class="form-select form-control" id="account" required>
-                                        <option value="">Select Account</option>
-                                        <!-- Options will be populated by JS -->
+                                        <option value="">Select Account</option> 
                                     </select>
                                 </div>
                                 <div class="mb-3">
@@ -48,15 +47,14 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Right Column: Table -->
+                
                 <div class="col-md-7">
                     <div class="card shadow-sm border-0 rounded">
                         <div class="card-header bg-primary text-white text-center">
                             <h5 class="mb-0">Income Categories</h5>
                         </div>
                         <div class="card-body">
-                            <!-- Export Icon Inside Table Header -->
+                            
                             <i class="fa fa-file-excel export-icon" onclick="exportToExcel('accountsTable', 'categories')" title="Export to Excel"></i>
                             <table id="accountsTable" class="table table-striped table-bordered">
                                 <thead class="table-striped">
@@ -68,7 +66,7 @@
                                     </tr>
                                 </thead>
                                 <tbody id="CategoriesTableBody">
-                                    <!-- Accounts will be loaded here -->
+                                    
                                 </tbody>
                             </table>
                         </div>
@@ -96,7 +94,7 @@
                     </div>
                     <div class="mb-3">
                         <select class="form-control form-select" id="modal_account" required>
-                            <!-- Options will be populated by JavaScript -->
+                             
                         </select>
                     </div>
                     <div class="mb-3">
@@ -111,7 +109,7 @@
     </div>
 </div>
 
-<!--Delete confirmation Modal -->
+ 
 <div class="modal fade" id="deleteCategoryModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -136,7 +134,7 @@
 </div>
 
 <script>
-// Function to load accounts and populate both the main form and the modal
+ 
 function loadAccounts(selectedAccountId = null, callback = null) {  
     fetch('http://127.0.0.1:8000/api/accounts/list/')  
         .then(response => response.json())
@@ -171,17 +169,14 @@ function loadAccounts(selectedAccountId = null, callback = null) {
 
 
 function openEditModal(id,name, accountId, description) {
-     
-     // Set input values in the modal
      document.getElementById('modal_category_id').value = id; 
      document.getElementById('modal_name').value = name; 
      document.getElementById('modal_description').value = description;
-     // Load accounts and preselect the correct one 
-    loadAccounts(accountId, () => {
-        // Ensure the accounts are loaded before setting the dropdown value
+     
+    loadAccounts(accountId, () => { 
         let accountDropdown = document.getElementById('modal_account');
         
-        // Check if the accountId exists in the dropdown options
+         
         let optionExists = [...accountDropdown.options].some(option => option.value == accountId);
         if (optionExists) {
             accountDropdown.value = accountId;
@@ -246,7 +241,7 @@ function loadCategories() {
     .then(response => response.json())
     .then(data => {
         let tableBody = document.getElementById('CategoriesTableBody');
-        tableBody.innerHTML = ''; // Clear existing table rows
+        tableBody.innerHTML = '';  
         data.forEach(category => {
 
              
@@ -293,7 +288,7 @@ document.getElementById('categoryForm').addEventListener('submit', function(even
         if (data.id) {
             messageDiv.innerHTML = '<div class="alert alert-success">Income Category Created Successfully!</div>';
             document.getElementById('categoryForm').reset();
-            loadCategories(); // Fix: Reload categories, not accounts
+            loadCategories();  
         } else {
             messageDiv.innerHTML = '<div class="alert alert-danger">Error: ' + JSON.stringify(data) + '</div>';
         }
@@ -316,7 +311,7 @@ function deleteCategory(id) {
     .then(response => {
         if (response.ok) {
             document.getElementById('responseMessage').innerHTML = '<div class="alert alert-success">Income Category Deleted Successfully!</div>';
-            loadCategories(); // Fix: Reload categories, not accounts
+            loadCategories();  
         } else {
             document.getElementById('responseMessage').innerHTML = '<div class="alert alert-danger">Error deleting Category.</div>';
         }
@@ -326,17 +321,14 @@ function deleteCategory(id) {
 
 
 
-// Function to Open Delete Confirmation Modal
+ 
 function openDeleteModal(id) {
     document.getElementById('delete_category_id').value = id;
     let modal = new bootstrap.Modal(document.getElementById('deleteCategoryModal'));
     modal.show();
 }
 
-
-
-
-// Function to Delete Category
+ 
 function deleteCategory() {
     let categoryId = document.getElementById('delete_category_id').value;
     let url = 'http://127.0.0.1:8000/api/income-category/delete/';
@@ -379,10 +371,10 @@ document.getElementById('deleteCategoryModal').addEventListener('hidden.bs.modal
     $('#responseMessage').fadeOut('fast');
 });
 
-// Load data on page load
+ 
 document.addEventListener('DOMContentLoaded', function() {
     
-    loadAccounts(); // Fix function name
+    loadAccounts();  
     loadCategories();
 });
 </script>
