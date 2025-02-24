@@ -8,7 +8,6 @@ from datetime import timedelta
 from django.db.models import Sum
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
-
 from django.contrib.auth.decorators import login_required
 
 @login_required(login_url='/auth/') 
@@ -47,7 +46,6 @@ def add_expenditure_form(request):
 @login_required(login_url='/auth/') 
 def add_income_form(request):
     return render(request, "Incomes/add_income_form.html")
-
 
 def auth_view(request):
     return render(request, 'auth.html')

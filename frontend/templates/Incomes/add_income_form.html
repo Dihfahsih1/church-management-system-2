@@ -373,6 +373,7 @@ function loadIncomes() {
     fetch('http://127.0.0.1:8000/api/incomes/list/')
     .then(response => response.json())
     .then(data => {
+        let formattedAmount = Number(income.amount).toLocaleString(); // Format amount with commas
         let tableBody = document.getElementById('incomesTableBody');
         tableBody.innerHTML = '';  
         data.forEach(income => {
@@ -381,7 +382,7 @@ function loadIncomes() {
                     <td>${income.date}</td>
                     <td>${income.account_name}</td>  
                     <td>${income.category_name}</td> 
-                    <td>${income.amount}</td>  
+                    <td>${formattedAmount}</td>  
                     <td> 
                         <button class="btn btn-success btn-sm" onclick="openEditModal(${income.id},'${income.date}', ${income.account_id}, ${income.category_id}, ${income.amount}, '${income.description}')">
                             <i class="fa fa-edit"></i>

@@ -344,12 +344,13 @@ function loadExpenditures() {
         let tableBody = document.getElementById('expendituresTableBody');
         tableBody.innerHTML = ''; // Clear existing table rows
         data.forEach(expenditure => {
+            let formattedAmount = Number(expenditure.amount).toLocaleString(); // Format amount with commas
             let row = 
                 `<tr>
                     <td>${expenditure.date}</td>
                     <td>${expenditure.account_name}</td>  
                     <td>${expenditure.category_name}</td> 
-                    <td>${expenditure.amount}</td>       
+                    <td>${formattedAmount}</td>       
                     <td> 
                         <button class="btn btn-success btn-sm" onclick="openEditModal(${expenditure.id},'${expenditure.date}', ${expenditure.account_id}, ${expenditure.category_id}, '${expenditure.amount}', '${expenditure.description}')">
                             <i class="fa fa-edit"></i>
