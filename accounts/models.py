@@ -3,6 +3,11 @@ from django.utils import timezone
 
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
  
+PAYMENT_METHODS = [
+        ('Cash', 'Cash'),
+        ('Equity', 'Equity'),
+        ('Finance Trust', 'Finance Trust'),
+    ]
 
 class UserManager(BaseUserManager):
     def create_user(self, email, username, password=None, **extra_fields):
@@ -90,6 +95,7 @@ class ExpenditureCategory(models.Model):
 
 # Income Model
 class Income(models.Model):
+    payment_method = models.CharField(max_length=20, choices=PAYMENT_METHODS, default='Cash')
     account = models.ForeignKey(Account, on_delete=models.SET_NULL, related_name="incomes",  blank=True, null=True)  
     category = models.ForeignKey(IncomeCategory, on_delete=models.SET_NULL, related_name="incomes",  blank=True, null=True)  
     amount = models.DecimalField(max_digits=10, decimal_places=2) 
@@ -101,6 +107,7 @@ class Income(models.Model):
 
 # Expenditure Model
 class Expenditure(models.Model):
+    payment_method = models.CharField(max_length=20, choices=PAYMENT_METHODS, default='Cash')
     account = models.ForeignKey(Account, on_delete=models.SET_NULL, related_name="expenditures",  blank=True, null=True) 
     category = models.ForeignKey(ExpenditureCategory, on_delete=models.SET_NULL, related_name="expenditures",  blank=True, null=True)  
     amount = models.DecimalField(max_digits=10, decimal_places=2)  
