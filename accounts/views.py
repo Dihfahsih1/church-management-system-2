@@ -539,3 +539,7 @@ def delete_expenditure(request):
         return Response({"message": "Expenditure deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
     except Expenditure.DoesNotExist:
         return Response({"error": "Expenditure not found"}, status=status.HTTP_404_NOT_FOUND)
+
+
+def get_payment_methods(request):
+    return JsonResponse({'payment_methods': dict(Income.PAYMENT_METHODS)})

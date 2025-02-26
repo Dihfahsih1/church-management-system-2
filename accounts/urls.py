@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import  create_account_type, delete_account_type, filter_expenditure, filter_income, list_account_types, list_expenditure, list_expenditure_categories, list_income_categories, list_incomes, list_or_create_accounts, report_summary, retrieve_account, retrieve_account_type, update_account, delete_account,\
+from .views import  create_account_type, delete_account_type, filter_expenditure, filter_income, get_payment_methods, list_account_types, list_expenditure, list_expenditure_categories, list_income_categories, list_incomes, list_or_create_accounts, report_summary, retrieve_account, retrieve_account_type, update_account, delete_account,\
                     create_income, retrieve_income, update_account_type, update_income, delete_income,\
                     create_expenditure,retrieve_expenditure,update_expenditure,delete_expenditure, \
                     create_income_category, retrieve_income_category, update_income_category, delete_income_category, \
@@ -53,5 +53,7 @@ urlpatterns = [
     path('reports/', report_summary, name='report-summary'),
     path('api/income/', filter_income, name='filter_income'),
     path('api/expenditure/', filter_expenditure, name='filter_expenditure'),
+
+    path('get-payment-methods/', get_payment_methods, name="get_payment_methods")
  
 ]

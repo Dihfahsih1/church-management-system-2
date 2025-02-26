@@ -53,6 +53,14 @@
                                         <!-- Options will be populated by JS -->
                                     </select>
                                 </div>
+                                
+                                <div class="mb-3">
+                                    <i>Payment Method</i>
+                                    <select class="form-select form-control" id="payment_method" required>
+                                        <option value="">Loading...</option> <!-- Will be replaced by JS -->
+                                    </select>
+                                </div>
+
                                 <div class="mb-3">
                                     <i>Amount</i>
                                     <input type="number" class="form-control" id="amount" placeholder="Enter Amount" required>
@@ -86,6 +94,7 @@
                                         <th>Date</th> 
                                         <th>Account</th> 
                                         <th>Category</th>
+                                        <th>Payment Method</th>
                                         <th>Amount</th>
                                         <th>Actions</th>
                                     </tr>
@@ -185,6 +194,24 @@
 </div>
 
 <script>
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    fetch("/get-payment-methods/")  // Update with your actual URL
+        .then(response => response.json())
+        .then(data => {
+            let paymentMethodSelect = document.getElementById("payment_method");
+            paymentMethodSelect.innerHTML = '<option value="">Select Payment Method</option>';
+            
+            for (let key in data.payment_methods) {
+                let option = document.createElement("option");
+                option.value = key;
+                option.textContent = data.payment_methods[key];
+                paymentMethodSelect.appendChild(option);
+            }
+        })
+        .catch(error => console.error("Error fetching payment methods:", error));
+});
 
 // handle income creation form submission
 document.getElementById('IncomeForm').addEventListener('submit', function(event) {
@@ -340,6 +367,7 @@ document.getElementById('modalIncomeForm').addEventListener('submit', function(e
     let incomeId = document.getElementById('modal_income_id').value;
     let account = document.getElementById('modal_account').value;
     let category = document.getElementById('modal_category').value;
+    let payment_method = document.getElementById('modal_payment_method').value;
     let amount = document.getElementById('modal_amount').value;
     let date = document.getElementById('modal_date').value;
     let description = document.getElementById('modal_description').value; 
@@ -349,6 +377,7 @@ document.getElementById('modalIncomeForm').addEventListener('submit', function(e
     formData.append('id', incomeId);
     formData.append('account', account);
     formData.append('category', category);
+    formData.append('payment_method', payment_method);
     formData.append('amount', amount);
     formData.append('description', description);
     formData.append('date',date);
