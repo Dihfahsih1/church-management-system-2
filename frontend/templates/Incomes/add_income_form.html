@@ -5,11 +5,11 @@
 <style>
     .export-icon {
         cursor: pointer;
-        color: #198754; /* Green Excel-like color */
+        color: #198754;  
         font-size: 1.5rem;
     }
     .export-icon:hover {
-        color: #145c32; /* Darker green */
+        color: #145c32;  
     }
 </style>
 
@@ -46,6 +46,7 @@
                                         <!-- Options will be populated by JS -->
                                     </select>
                                 </div>
+
                                 <div class="mb-3">
                                     <i>Category</i>
                                     <select class="form-select form-control" id="category" required>
@@ -197,7 +198,7 @@
 
 
 document.addEventListener("DOMContentLoaded", function () {
-    fetch("/get-payment-methods/")  // Update with your actual URL
+    fetch("http://127.0.0.1:8000/api/get-payment-methods/")   
         .then(response => response.json())
         .then(data => {
             let paymentMethodSelect = document.getElementById("payment_method");
@@ -216,7 +217,6 @@ document.addEventListener("DOMContentLoaded", function () {
 // handle income creation form submission
 document.getElementById('IncomeForm').addEventListener('submit', function(event) {
     event.preventDefault(); // Prevent default form submission (page reload)
-
     let account = document.getElementById('account').value;
     let category = document.getElementById('category').value;
     let payment_method = document.getElementById('payment_method').value;
@@ -302,8 +302,8 @@ function loadIncomeCategories(selectedCategoryId = null, callback = null) {
         .then(data => {
             console.log("Categories fetched:", data);
 
-            let categoryDropdown = document.getElementById('category'); // Main form
-            let modalCategoryDropdown = document.getElementById('modal_category'); // Modal form
+            let categoryDropdown = document.getElementById('category'); 
+            let modalCategoryDropdown = document.getElementById('modal_category'); 
  
             categoryDropdown.innerHTML = '<option value="">Select Category</option>';
             modalCategoryDropdown.innerHTML = '<option value="">Select Category</option>';

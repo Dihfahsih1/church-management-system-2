@@ -4,7 +4,7 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Account, AccountType, Income, Expenditure,IncomeCategory, ExpenditureCategory
+from .models import Account, AccountType, Income, Expenditure,IncomeCategory, ExpenditureCategory,PAYMENT_METHODS
 from .serializers import AccountReadSerializer, AccountSerializer, AccountTypeSerializer, AccountWriteSerializer, IncomeSerializer, ExpenditureSerializer, \
                         IncomeCategorySerializer, ExpenditureCategorySerializer
 
@@ -542,4 +542,4 @@ def delete_expenditure(request):
 
 
 def get_payment_methods(request):
-    return JsonResponse({'payment_methods': dict(Income.PAYMENT_METHODS)})
+    return JsonResponse({'payment_methods': dict(PAYMENT_METHODS)})
