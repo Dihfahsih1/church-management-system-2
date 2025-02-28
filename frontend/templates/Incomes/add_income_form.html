@@ -147,7 +147,7 @@
                     </div>
 
                     <div class="mb-3">
-                        <i>Category</i>
+                        <i>Payment Method</i>
                         <select class="form-control form-select" id="modal_payment_method" required>
                             <!-- Options will be populated by JS -->
                         </select>
@@ -213,6 +213,64 @@ document.addEventListener("DOMContentLoaded", function () {
         })
         .catch(error => console.error("Error fetching payment methods:", error));
 });
+
+function openEditModal(id,date, accountId, categoryId, paymentMethod,amount, description) {
+    console.log("Opening edit modal with:", { id, date, accountId, categoryId, paymentMethod, amount, description });
+
+    // Set input values in the modal
+    document.getElementById('modal_income_id').value = id;
+    document.getElementById('modal_date').value = date; 
+    document.getElementById('modal_amount').value = amount;
+    document.getElementById('modal_description').value = description;
+
+     // Load payment methods and preselect the correct one
+     fetch("http://127.0.0.1:8000/api/get-payment-methods/")
+        .then(response => response.json())
+        .then(data => {
+            let paymentMethodSelect = document.getElementById("modal_payment_method");
+            paymentMethodSelect.innerHTML = ''; // Clear previous options
+
+            // Default "Select" option
+            let defaultOption = document.createElement("option");
+            defaultOption.value = "";
+            defaultOption.textContent = "Select Payment Method";
+            paymentMethodSelect.appendChild(defaultOption); 
+            for (let key in data.payment_methods) {
+                let option = document.createElement("option");
+                option.value = key;
+                option.textContent = data.payment_methods[key]; 
+                if (data.payment_methods[key] === paymentMethod) {
+                    option.selected = true;
+                }
+
+                paymentMethodSelect.appendChild(option);
+            }
+        })
+        .catch(error => console.error("Error fetching payment methods:", error));
+    
+
+    // Load accounts and preselect the correct one
+    loadAccounts(accountId, () => {
+        let accountDropdown = document.getElementById('modal_account');
+        let optionExists = [...accountDropdown.options].some(option => option.value == accountId);
+        if (optionExists) {
+            accountDropdown.value = accountId;
+        }
+    });
+
+    // Load categories and preselect the correct one
+    loadIncomeCategories(categoryId, () => {
+        let categoryDropdown = document.getElementById('modal_category');
+        let optionExists = [...categoryDropdown.options].some(option => option.value == categoryId);
+        if (optionExists) {
+            categoryDropdown.value = categoryId;
+        }
+    });
+ 
+    let myModal = new bootstrap.Modal(document.getElementById('editIncomeModal'), {});
+    myModal.show();
+}
+
 
 // handle income creation form submission
 document.getElementById('IncomeForm').addEventListener('submit', function(event) {
@@ -326,38 +384,6 @@ function loadIncomeCategories(selectedCategoryId = null, callback = null) {
         })
         .catch(error => console.error('Error loading categories:', error));
 }
-function openEditModal(id,date, accountId, categoryId, amount, description) {
-    console.log("Opening edit modal with:", { id, date, accountId, categoryId, payment_method, amount, description });
-
-    // Set input values in the modal
-    document.getElementById('modal_income_id').value = id;
-    document.getElementById('modal_date').value = date;
-    document.getElementById('modal_amount').value = amount;
-    document.getElementById('modal_payment_method').value = payment_method;
-    document.getElementById('modal_description').value = description;
-    
-
-    // Load accounts and preselect the correct one
-    loadAccounts(accountId, () => {
-        let accountDropdown = document.getElementById('modal_account');
-        let optionExists = [...accountDropdown.options].some(option => option.value == accountId);
-        if (optionExists) {
-            accountDropdown.value = accountId;
-        }
-    });
-
-    // Load categories and preselect the correct one
-    loadIncomeCategories(categoryId, () => {
-        let categoryDropdown = document.getElementById('modal_category');
-        let optionExists = [...categoryDropdown.options].some(option => option.value == categoryId);
-        if (optionExists) {
-            categoryDropdown.value = categoryId;
-        }
-    });
- 
-    let myModal = new bootstrap.Modal(document.getElementById('editIncomeModal'), {});
-    myModal.show();
-}
 
 
 // Update the income
@@ -367,7 +393,7 @@ document.getElementById('modalIncomeForm').addEventListener('submit', function(e
     let incomeId = document.getElementById('modal_income_id').value;
     let account = document.getElementById('modal_account').value;
     let category = document.getElementById('modal_category').value;
-    let payment_method = document.getElementById('modal_payment_method').value;
+    let payment_methods = document.getElementById('modal_payment_method').value;
     let amount = document.getElementById('modal_amount').value;
     let date = document.getElementById('modal_date').value;
     let description = document.getElementById('modal_description').value; 
@@ -377,7 +403,7 @@ document.getElementById('modalIncomeForm').addEventListener('submit', function(e
     formData.append('id', incomeId);
     formData.append('account', account);
     formData.append('category', category);
-    formData.append('payment_method', payment_method);
+    formData.append('payment_method', payment_methods);
     formData.append('amount', amount);
     formData.append('description', description);
     formData.append('date',date);
@@ -414,19 +440,20 @@ function loadIncomes() {
     fetch('http://127.0.0.1:8000/api/incomes/list/')
     .then(response => response.json())
     .then(data => {
-        let formattedAmount = Number(income.amount).toLocaleString(); // Format amount with commas
+        
         let tableBody = document.getElementById('incomesTableBody');
         tableBody.innerHTML = '';  
         data.forEach(income => {
+            let formattedAmount = Number(income.amount).toLocaleString(); // Format amount with commas
             let row = 
                 `<tr>
                     <td>${income.date}</td>
                     <td>${income.account_name}</td>  
                     <td>${income.category_name}</td> 
-                    <td>${income.payment_method}</td> 
+                    <td>${income.payment_methods}</td> 
                     <td>${formattedAmount}</td>  
                     <td> 
-                        <button class="btn btn-success btn-sm" onclick="openEditModal(${income.id},'${income.date}', ${income.account_id}, ${income.category_id},'${income.payment_method}', ${income.amount}, '${income.description}')">
+                        <button class="btn btn-success btn-sm" onclick="openEditModal(${income.id},'${income.date}', ${income.account_id}, ${income.category_id},'${income.payment_methods}', ${income.amount}, '${income.description}')">
                             <i class="fa fa-edit"></i>
                         </button>
 

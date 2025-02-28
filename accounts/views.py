@@ -412,6 +412,7 @@ def list_incomes(request):
             'date':income.date,
             'account_id': income.account_id,
             'category_id': income.category_id,
+            'payment_methods':income.payment_method,
             'account_name': income.account.name if income.account else 'No account',  # Handle missing account
             'category_name': income.category.name if income.category else 'No category',
             'amount': income.amount if income.amount else 0,
