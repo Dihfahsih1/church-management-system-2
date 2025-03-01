@@ -166,6 +166,7 @@ def list_income_categories(request):
             'account_name': category.account.name if category.account else 'No account',  
             'account_id': category.account.id if category.account else 'No account', 
             'description': category.description
+            
         })
     
     return Response(categories_data)
@@ -485,6 +486,7 @@ def list_expenditure(request):
             'account_name': expenditure.account.name if expenditure.account else 'No account',  # Handle missing account
             'category_name': expenditure.category.name if expenditure.category else 'No category',
             'amount': expenditure.amount if expenditure.amount else 0,
+            'payment_methods':expenditure.payment_method,
             'description': expenditure.description
         })
     

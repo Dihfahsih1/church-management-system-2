@@ -112,26 +112,33 @@
                 <form id="modalExpenditureForm" method="POST">
                     <input type="hidden" id="modal_expenditure_id">
                     {% csrf_token %}
+                    <i>Date</i>
                     <div class="mb-3">
                         <input type="date" class="form-control" id="modal_date" required>
                     </div>
-
+                    <i>Account</i>
                     <div class="mb-3"> 
                         <select class="form-control form-select" id="modal_account" required> 
                             <!-- Options will be populated by JS -->
                         </select>
                     </div>
+                    <i>Category</i>
                     <div class="mb-3">
                         <select class="form-control form-select" id="modal_category" required>
                                  
                         </select>
                     </div>
                     <div class="mb-3">
+                        <i>Payment Method</i>
+                        <select class="form-control form-select" id="modal_payment_method" required>
+                            <!-- Options will be populated by JS -->
+                        </select>
+                    </div>
+                    <i>Amount</i>
+                    <div class="mb-3">
                         <input type="number" class="form-control" id="modal_amount" placeholder="Enter Amount" required>
                     </div>
-                    <div class="mb-3">
-                        <input type="number" class="form-control" id="modal_payment_method" required>
-                    </div>
+                     <i>Narration</i>
                     <div class="mb-3"> 
                         <input type="text" class="form-control" id="modal_description" placeholder="Enter Expenditure Narration" required>
                     </div>
@@ -405,9 +412,10 @@ function loadExpenditures() {
                     <td>${expenditure.date}</td>
                     <td>${expenditure.account_name}</td>  
                     <td>${expenditure.category_name}</td> 
+                     <td>${expenditure.payment_methods}</td> 
                     <td>${formattedAmount}</td>       
                     <td> 
-                        <button class="btn btn-success btn-sm" onclick="openEditModal(${expenditure.id},'${expenditure.date}', ${expenditure.account_id}, ${expenditure.category_id}, '${expenditure.amount}', '${expenditure.description}')">
+                        <button class="btn btn-success btn-sm" onclick="openEditModal(${expenditure.id},'${expenditure.date}', ${expenditure.account_id}, ${expenditure.category_id},'${expenditure.payment_methods}',  ${expenditure.amount}, '${expenditure.description}')">
                             <i class="fa fa-edit"></i>
                         </button>
                         <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteExpenditureModal"  onclick="openDeleteModal(${expenditure.id})">
