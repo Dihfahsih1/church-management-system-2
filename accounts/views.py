@@ -457,7 +457,7 @@ def delete_income(request):
     except Income.DoesNotExist:
         return Response({"error": "Income not found."}, status=status.HTTP_404_NOT_FOUND)
 
-####### EXPENDTIURE #######
+####### EXPENDITURE #######
 @api_view(["POST"])
 def create_expenditure(request):
     """

@@ -36,6 +36,7 @@
                                             <option value="">Select Account</option> 
                                         </select>
                                     </div>
+
                                     <select class="form-select form-control" id="category" required>
                                         <option value="">Select category</option>
                                          
@@ -80,6 +81,7 @@
                                         <th>Date</th>
                                         <th>Account</th> 
                                         <th>Category</th>
+                                        <th>Payment Method</th>
                                         <th>Amount</th>  
                                         <th>Actions</th>
                                     </tr>
@@ -127,6 +129,9 @@
                     <div class="mb-3">
                         <input type="number" class="form-control" id="modal_amount" placeholder="Enter Amount" required>
                     </div>
+                    <div class="mb-3">
+                        <input type="number" class="form-control" id="modal_payment_method" required>
+                    </div>
                     <div class="mb-3"> 
                         <input type="text" class="form-control" id="modal_description" placeholder="Enter Expenditure Narration" required>
                     </div>
@@ -164,7 +169,22 @@
 </div>
 
 <script>
-
+document.addEventListener("DOMContentLoaded", function () {
+    fetch("/api/get-payment-methods/")   
+        .then(response => response.json())
+        .then(data => {
+            let paymentMethodSelect = document.getElementById("payment_method");
+            paymentMethodSelect.innerHTML = '<option value="">Select Payment Method</option>';
+            
+            for (let key in data.payment_methods) {
+                let option = document.createElement("option");
+                option.value = key;
+                option.textContent = data.payment_methods[key];
+                paymentMethodSelect.appendChild(option);
+            }
+        })
+        .catch(error => console.error("Error fetching payment methods:", error));
+});
 
 //Submit expenditure
 document.getElementById('ExpenditureForm').addEventListener('submit', function(event) {
@@ -178,7 +198,7 @@ document.getElementById('ExpenditureForm').addEventListener('submit', function(e
     let date = document.getElementById('date').value; 
 
     
-    fetch('http://127.0.0.1:8000/api/expenditures/create/', {
+    fetch('/api/expenditures/create/', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -202,7 +222,7 @@ document.getElementById('ExpenditureForm').addEventListener('submit', function(e
 
 // Function to load accounts and populate both the main form and the modal
 function loadAccounts(selectedAccountId = null, callback = null) {  
-    fetch('http://127.0.0.1:8000/api/accounts/list/')  
+    fetch('/api/accounts/list/')  
         .then(response => response.json())
         .then(data => { 
 
@@ -235,7 +255,7 @@ function loadAccounts(selectedAccountId = null, callback = null) {
 
 
 function loadExpenditureCategories(selectedCategoryId = null, callback = null) {
-    fetch('http://127.0.0.1:8000/api/expenditure-category/list/')  
+    fetch('/api/expenditure-category/list/')  
         .then(response => response.json())
         .then(data => { 
 
@@ -267,13 +287,42 @@ function loadExpenditureCategories(selectedCategoryId = null, callback = null) {
 }
 
 
-function openEditModal(id, date, accountId, categoryId, amount, description) {
+function openEditModal(id,date, accountId, categoryId, paymentMethod,amount, description) {
+    console.log("Opening edit modal with:", { id, date, accountId, categoryId, paymentMethod, amount, description });
+
      
     // Set input values in the modal
     document.getElementById('modal_expenditure_id').value = id;
     document.getElementById('modal_date').value = date || '';
     document.getElementById('modal_amount').value = amount;
     document.getElementById('modal_description').value = description;
+
+     // Load payment methods and preselect the correct one
+     fetch("/api/get-payment-methods/")
+        .then(response => response.json())
+        .then(data => {
+            let paymentMethodSelect = document.getElementById("modal_payment_method");
+            paymentMethodSelect.innerHTML = ''; // Clear previous options
+
+            // Default "Select" option
+            let defaultOption = document.createElement("option");
+            defaultOption.value = "";
+            defaultOption.textContent = "Select Payment Method";
+            paymentMethodSelect.appendChild(defaultOption); 
+            for (let key in data.payment_methods) {
+                let option = document.createElement("option");
+                option.value = key;
+                option.textContent = data.payment_methods[key]; 
+                if (data.payment_methods[key] === paymentMethod) {
+                    option.selected = true;
+                }
+
+                paymentMethodSelect.appendChild(option);
+            }
+        })
+        .catch(error => console.error("Error fetching payment methods:", error));
+    
+
     // Load accounts and preselect the correct one
     loadAccounts(accountId, () => {
         
@@ -309,7 +358,7 @@ document.getElementById('modalExpenditureForm').addEventListener('submit', funct
     let amount = document.getElementById('modal_amount').value;
     let description = document.getElementById('modal_description').value; 
 
-    let url = 'http://127.0.0.1:8000/api/expenditures/update/';
+    let url = '/api/expenditures/update/';
     let formData = new FormData();
     formData.append('id', expenditureId);
     formData.append('account', account);
@@ -344,7 +393,7 @@ document.getElementById('modalExpenditureForm').addEventListener('submit', funct
 
 // Function to load expenditures
 function loadExpenditures() {
-    fetch('http://127.0.0.1:8000/api/expenditures/list/')
+    fetch('/api/expenditures/list/')
     .then(response => response.json())
     .then(data => {
         let tableBody = document.getElementById('expendituresTableBody');
@@ -382,7 +431,7 @@ function openDeleteModal(id) {
 // Function to Delete Expenditure
 function deleteExpenditure() {
     let expenditureId = document.getElementById('delete_expenditure_id').value;
-    let url = 'http://127.0.0.1:8000/api/expenditures/delete/';
+    let url = '/api/expenditures/delete/';
 
     fetch(url, {
         method: 'POST',
