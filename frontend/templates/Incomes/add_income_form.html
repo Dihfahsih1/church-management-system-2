@@ -198,7 +198,7 @@
 
 
 document.addEventListener("DOMContentLoaded", function () {
-    fetch("http://127.0.0.1:8000/api/get-payment-methods/")   
+    fetch("/api/get-payment-methods/")   
         .then(response => response.json())
         .then(data => {
             let paymentMethodSelect = document.getElementById("payment_method");
@@ -224,7 +224,7 @@ function openEditModal(id,date, accountId, categoryId, paymentMethod,amount, des
     document.getElementById('modal_description').value = description;
 
      // Load payment methods and preselect the correct one
-     fetch("http://127.0.0.1:8000/api/get-payment-methods/")
+     fetch("/api/get-payment-methods/")
         .then(response => response.json())
         .then(data => {
             let paymentMethodSelect = document.getElementById("modal_payment_method");
@@ -290,7 +290,7 @@ document.getElementById('IncomeForm').addEventListener('submit', function(event)
     formData.append('description', description);
     formData.append('date', date);
 
-    fetch('http://127.0.0.1:8000/api/incomes/create/', {
+    fetch('/api/incomes/create/', {
         method: 'POST',
         headers: {
             'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
@@ -320,7 +320,7 @@ document.getElementById('IncomeForm').addEventListener('submit', function(event)
 
 // Function to load accounts and populate both the main form and the modal
 function loadAccounts(selectedAccountId = null, callback = null) {  
-    fetch('http://127.0.0.1:8000/api/accounts/list/')  
+    fetch('/api/accounts/list/')  
         .then(response => response.json())
         .then(data => {
             console.log("Accounts fetched:", data);
@@ -355,7 +355,7 @@ function loadAccounts(selectedAccountId = null, callback = null) {
 
 // Function to load income categories and populate both the main form and the modal
 function loadIncomeCategories(selectedCategoryId = null, callback = null) {
-    fetch('http://127.0.0.1:8000/api/income-category/list/')  
+    fetch('/api/income-category/list/')  
         .then(response => response.json())
         .then(data => {
             console.log("Categories fetched:", data);
@@ -389,7 +389,6 @@ function loadIncomeCategories(selectedCategoryId = null, callback = null) {
 // Update the income
 document.getElementById('modalIncomeForm').addEventListener('submit', function(event) {
     event.preventDefault();
-
     let incomeId = document.getElementById('modal_income_id').value;
     let account = document.getElementById('modal_account').value;
     let category = document.getElementById('modal_category').value;
@@ -398,7 +397,7 @@ document.getElementById('modalIncomeForm').addEventListener('submit', function(e
     let date = document.getElementById('modal_date').value;
     let description = document.getElementById('modal_description').value; 
 
-    let url = 'http://127.0.0.1:8000/api/incomes/update/';
+    let url = '/api/incomes/update/';
     let formData = new FormData();
     formData.append('id', incomeId);
     formData.append('account', account);
@@ -430,14 +429,12 @@ document.getElementById('modalIncomeForm').addEventListener('submit', function(e
     })
     .catch(error => console.error('Error:', error));
 
-    
-
 });
 
 
 // Function to load incomes
 function loadIncomes() {
-    fetch('http://127.0.0.1:8000/api/incomes/list/')
+    fetch('/api/incomes/list/')
     .then(response => response.json())
     .then(data => {
         
@@ -479,7 +476,7 @@ function openDeleteModal(id) {
 // Function to Delete Income
 function deleteIncome() {
     let incomeId = document.getElementById('delete_income_id').value;
-    let url = 'http://127.0.0.1:8000/api/incomes/delete/';
+    let url = '/api/incomes/delete/';
 
     fetch(url, {
         method: 'POST',
