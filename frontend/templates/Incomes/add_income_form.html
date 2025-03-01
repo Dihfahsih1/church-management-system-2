@@ -450,7 +450,7 @@ function loadIncomes() {
                     <td>${income.payment_methods}</td> 
                     <td>${formattedAmount}</td>  
                     <td> 
-                        <button class="btn btn-success btn-sm" onclick="openEditModal(${income.id},'${income.date}', ${income.account_id}, ${income.category_id},'${income.payment_methods}', ${income.amount}, '${income.description}')">
+                        <button class="btn btn-success btn-sm" onclick="openEditModal(${income.id},'${income.date}', ${income.account_id}, ${income.category_id},'${income.payment_methods}', ${income.amount}, '${expenditure.description.replace(/'/g, "\\'")}')">
                             <i class="fa fa-edit"></i>
                         </button>
 

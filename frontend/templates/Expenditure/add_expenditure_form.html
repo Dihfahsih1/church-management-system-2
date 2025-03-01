@@ -27,16 +27,20 @@
                                 {% csrf_token %}
                                 
                                 <div class="mb-3"> 
+                                    <i>Date</i>
                                     <div class="input-group date">
                                         <input type="date" class="form-control" id="date"> 
                                     </div>
-
-                                    <div class="mb-3"> 
-                                        <select class="form-select form-control" id="account" required>
-                                            <option value="">Select Account</option> 
-                                        </select>
-                                    </div>
-
+                                </div>
+                                    
+                                <div class="mb-3"> 
+                                    <i>Account</i>
+                                    <select class="form-select form-control" id="account" required>
+                                        <option value="">Select Account</option> 
+                                    </select>
+                                </div>
+                                <div class="mb-3"> 
+`                                   <i>Category</i>
                                     <select class="form-select form-control" id="category" required>
                                         <option value="">Select category</option>
                                          
@@ -48,9 +52,11 @@
                                         <option value="">Loading...</option>  
                                     </select>
                                 </div>
+                                <i>Amount</i>
                                 <div class="mb-3">
                                     <input type="number" class="form-control" id="amount" placeholder="Enter Amount" required>
                                 </div>
+                                <i>Narration</i>
                                 <div class="mb-3"> 
                                     <input type="text" class="form-control" id="description" placeholder="Enter Expenditure Narration" required>
                                 </div>
@@ -364,6 +370,7 @@ document.getElementById('modalExpenditureForm').addEventListener('submit', funct
     let category = document.getElementById('modal_category').value;
     let amount = document.getElementById('modal_amount').value;
     let description = document.getElementById('modal_description').value; 
+    let payment_method = document.getElementById('modal_payment_method').value; 
 
     let url = '/api/expenditures/update/';
     let formData = new FormData();
@@ -373,6 +380,7 @@ document.getElementById('modalExpenditureForm').addEventListener('submit', funct
     formData.append('category', category);
     formData.append('amount', amount);
     formData.append('description', description);
+    formData.append('payment_method', payment_method);
 
     fetch(url, {
         method: 'POST', 
@@ -415,7 +423,7 @@ function loadExpenditures() {
                      <td>${expenditure.payment_methods}</td> 
                     <td>${formattedAmount}</td>       
                     <td> 
-                        <button class="btn btn-success btn-sm" onclick="openEditModal(${expenditure.id},'${expenditure.date}', ${expenditure.account_id}, ${expenditure.category_id},'${expenditure.payment_methods}',  ${expenditure.amount}, '${expenditure.description}')">
+                        <button class="btn btn-success btn-sm"  onclick="openEditModal(${expenditure.id},'${expenditure.date}', ${expenditure.account_id}, ${expenditure.category_id},'${expenditure.payment_methods}', ${expenditure.amount}, '${expenditure.description.replace(/'/g, "\\'")}')">
                             <i class="fa fa-edit"></i>
                         </button>
                         <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteExpenditureModal"  onclick="openDeleteModal(${expenditure.id})">
