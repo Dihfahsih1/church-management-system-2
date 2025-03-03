@@ -564,7 +564,7 @@ def get_date_range(start_date=None, end_date=None):
 
 @api_view(['GET'])
 def balance_sheet(request):
-    """Generate balance sheet report for income and expenditures."""
+    """Generate balance sheet report for income and expenditures aggregated by account."""
     start_date = request.GET.get('start_date')
     end_date = request.GET.get('end_date')
 
@@ -575,16 +575,49 @@ def balance_sheet(request):
 
     start_date, end_date = get_date_range(start_date, end_date)
 
-    # Fetch records
+    # Aggregate income and expenditures by account
+    income_aggregation = Income.objects.filter(date__range=[start_date, end_date])\
+        .values("account__name")\
+        .annotate(total_income=Sum('amount'))
+
+    expenditure_aggregation = Expenditure.objects.filter(date__range=[start_date, end_date])\
+        .values("account__name")\
+        .annotate(total_expenditure=Sum('amount'))
+
+    # Merging the aggregated results into a single structure
+    account_data = {}
+
+    for income in income_aggregation:
+        account_name = income["account__name"] or "Uncategorized"
+        account_data[account_name] = {
+            "account": account_name,
+            "total_income": income["total_income"] or 0,
+            "total_expenditure": 0
+        }
+
+    for expenditure in expenditure_aggregation:
+        account_name = expenditure["account__name"] or "Uncategorized"
+        if account_name in account_data:
+            account_data[account_name]["total_expenditure"] = expenditure["total_expenditure"] or 0
+        else:
+            account_data[account_name] = {
+                "account": account_name,
+                "total_income": 0,
+                "total_expenditure": expenditure["total_expenditure"] or 0
+            }
+
+    # Convert dictionary to list
+    balance_sheet_data = list(account_data.values())
+
+    # Calculate total income, total expenditure, and balance
+    total_income = sum(item["total_income"] for item in balance_sheet_data)
+    total_expenditure = sum(item["total_expenditure"] for item in balance_sheet_data)
+    balance = total_income - total_expenditure
+
+    # Fetch full records for serialization
     incomes = Income.objects.filter(date__range=[start_date, end_date])
     expenditures = Expenditure.objects.filter(date__range=[start_date, end_date])
 
-    # Aggregate totals
-    total_income = incomes.aggregate(total=Sum('amount'))['total'] or 0
-    total_expenditure = expenditures.aggregate(total=Sum('amount'))['total'] or 0
-    balance = total_income - total_expenditure
-
-    # Serialize data
     income_serializer = IncomeSerializer(incomes, many=True)
     expenditure_serializer = ExpenditureSerializer(expenditures, many=True)
 
@@ -594,6 +627,7 @@ def balance_sheet(request):
         "total_income": total_income,
         "total_expenditure": total_expenditure,
         "balance": balance,
+        "accounts": balance_sheet_data,  # Aggregated per account
         "income_details": income_serializer.data,
         "expenditure_details": expenditure_serializer.data
     })
