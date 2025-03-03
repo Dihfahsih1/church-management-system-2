@@ -549,46 +549,39 @@ def get_payment_methods(request):
     return JsonResponse({'payment_methods': dict(PAYMENT_METHODS)})
 
 
-def get_date_range(date_filter):
-    """Determine the start and end date based on the date filter."""
+def get_date_range(start_date=None, end_date=None):
+    """Determine the start and end date based on the user's input or default to monthly."""
     today = timezone.now().date()
 
-    if date_filter == 'daily':
-        start_date = end_date = today
-    elif date_filter == 'weekly':
-        start_date = today - timedelta(days=today.weekday())  # Monday of this week
-        end_date = today
-    elif date_filter == 'monthly':
-        start_date = today.replace(day=1)  # First day of the month
-        end_date = today
-    elif date_filter == 'yearly':
-        start_date = today.replace(month=1, day=1)  # First day of the year
-        end_date = today
-    else:
-        return None, None  # Invalid filter
+    if start_date and end_date:
+        return start_date, end_date  # User-provided date range
+
+    # Default to monthly view
+    start_date = today.replace(day=1)  # First day of the current month
+    end_date = today  # Today's date
 
     return start_date, end_date
-
-from django.db.models import Sum  
 
 @api_view(['GET'])
 def balance_sheet(request):
     """Generate balance sheet report for income and expenditures."""
-    date_filter = request.GET.get('date_filter', 'daily')  # Default to daily
-    start_date, end_date = get_date_range(date_filter)
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
 
-    if not start_date:
-        return Response({"error": "Invalid date filter"}, status=400)
+    # Convert string dates to date objects
+    if start_date and end_date:
+        start_date = timezone.datetime.strptime(start_date, "%Y-%m-%d").date()
+        end_date = timezone.datetime.strptime(end_date, "%Y-%m-%d").date()
 
-    # Fetch income and expenditure records
+    start_date, end_date = get_date_range(start_date, end_date)
+
+    # Fetch records
     incomes = Income.objects.filter(date__range=[start_date, end_date])
     expenditures = Expenditure.objects.filter(date__range=[start_date, end_date])
 
-    # Calculate total income and total expenditure
+    # Aggregate totals
     total_income = incomes.aggregate(total=Sum('amount'))['total'] or 0
     total_expenditure = expenditures.aggregate(total=Sum('amount'))['total'] or 0
-
-    # Calculate balance
     balance = total_income - total_expenditure
 
     # Serialize data
@@ -596,7 +589,6 @@ def balance_sheet(request):
     expenditure_serializer = ExpenditureSerializer(expenditures, many=True)
 
     return Response({
-        "date_filter": date_filter,
         "start_date": start_date,
         "end_date": end_date,
         "total_income": total_income,

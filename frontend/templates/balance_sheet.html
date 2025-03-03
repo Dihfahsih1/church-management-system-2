@@ -43,28 +43,52 @@
 </div>
 
 <script>
+document.addEventListener("DOMContentLoaded", function () {
+    fetchBalanceSheet(); // Fetch default monthly data on load
+});
+
 document.getElementById('balanceSheetForm').addEventListener('submit', function(event) {
     event.preventDefault();
     let startDate = document.getElementById('startDate').value;
     let endDate = document.getElementById('endDate').value;
-    fetch(`/api/balance-sheet/?start_date=${startDate}&end_date=${endDate}`)
+    fetchBalanceSheet(startDate, endDate);
+});
+
+function fetchBalanceSheet(startDate = null, endDate = null) {
+    let url = "/api/balance-sheet/";
+
+    if (startDate && endDate) {
+        url += `?start_date=${startDate}&end_date=${endDate}`;
+    }
+
+    fetch(url)
         .then(response => response.json())
         .then(data => {
             let tbody = document.getElementById('balanceSheetBody');
             tbody.innerHTML = '';
-            if (data.length === 0) {
+
+            if (data.income_details.length === 0 && data.expenditure_details.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="3" class="text-center">No data found</td></tr>';
             } else {
-                data.forEach(item => {
+                data.income_details.forEach(item => {
                     tbody.innerHTML += `<tr>
                         <td>${item.account_name}</td>
-                        <td>${item.debit.toLocaleString()}</td>
-                        <td>${item.credit.toLocaleString()}</td>
+                        <td>${item.amount.toLocaleString()}</td>
+                        <td>0</td>
+                    </tr>`;
+                });
+
+                data.expenditure_details.forEach(item => {
+                    tbody.innerHTML += `<tr>
+                        <td>${item.account_name}</td>
+                        <td>0</td>
+                        <td>${item.amount.toLocaleString()}</td>
                     </tr>`;
                 });
             }
         })
         .catch(error => console.error('Error:', error));
-});
+}
 </script>
+
 {% endblock %}
