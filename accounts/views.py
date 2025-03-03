@@ -16,7 +16,8 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import User
 from django.utils import timezone
-from .serializers import UserSerializer
+from .serializers import UserSerializer 
+from datetime import timedelta
 
 from django.db.models import Sum
 from django.utils.timezone import now, timedelta
@@ -546,3 +547,61 @@ def delete_expenditure(request):
 
 def get_payment_methods(request):
     return JsonResponse({'payment_methods': dict(PAYMENT_METHODS)})
+
+
+def get_date_range(date_filter):
+    """Determine the start and end date based on the date filter."""
+    today = timezone.now().date()
+
+    if date_filter == 'daily':
+        start_date = end_date = today
+    elif date_filter == 'weekly':
+        start_date = today - timedelta(days=today.weekday())  # Monday of this week
+        end_date = today
+    elif date_filter == 'monthly':
+        start_date = today.replace(day=1)  # First day of the month
+        end_date = today
+    elif date_filter == 'yearly':
+        start_date = today.replace(month=1, day=1)  # First day of the year
+        end_date = today
+    else:
+        return None, None  # Invalid filter
+
+    return start_date, end_date
+
+from django.db.models import Sum  
+
+@api_view(['GET'])
+def balance_sheet(request):
+    """Generate balance sheet report for income and expenditures."""
+    date_filter = request.GET.get('date_filter', 'daily')  # Default to daily
+    start_date, end_date = get_date_range(date_filter)
+
+    if not start_date:
+        return Response({"error": "Invalid date filter"}, status=400)
+
+    # Fetch income and expenditure records
+    incomes = Income.objects.filter(date__range=[start_date, end_date])
+    expenditures = Expenditure.objects.filter(date__range=[start_date, end_date])
+
+    # Calculate total income and total expenditure
+    total_income = incomes.aggregate(total=Sum('amount'))['total'] or 0
+    total_expenditure = expenditures.aggregate(total=Sum('amount'))['total'] or 0
+
+    # Calculate balance
+    balance = total_income - total_expenditure
+
+    # Serialize data
+    income_serializer = IncomeSerializer(incomes, many=True)
+    expenditure_serializer = ExpenditureSerializer(expenditures, many=True)
+
+    return Response({
+        "date_filter": date_filter,
+        "start_date": start_date,
+        "end_date": end_date,
+        "total_income": total_income,
+        "total_expenditure": total_expenditure,
+        "balance": balance,
+        "income_details": income_serializer.data,
+        "expenditure_details": expenditure_serializer.data
+    })
