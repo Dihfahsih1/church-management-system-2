@@ -1,0 +1,64 @@
+{% extends 'includes/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-center">Balance Sheet</h2>
+    <form id="balanceSheetForm" class="row g-3">
+        <div class="col-md-4">
+            <label for="startDate" class="form-label">Start Date</label>
+            <input type="date" class="form-control" id="startDate" name="start_date" required>
+        </div>
+        <div class="col-md-4">
+            <label for="endDate" class="form-label">End Date</label>
+            <input type="date" class="form-control" id="endDate" name="end_date" required>
+        </div>
+        <div class="col-md-4 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary">Generate</button>
+        </div>
+    </form>
+    
+    <div class="mt-4">
+        <table class="table table-bordered table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th>Account</th>
+                    <th>Debit (UGX)</th>
+                    <th>Credit (UGX)</th>
+                </tr>
+            </thead>
+            <tbody id="balanceSheetBody">
+                <tr>
+                    <td colspan="3" class="text-center">No data available</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+document.getElementById('balanceSheetForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+    let startDate = document.getElementById('startDate').value;
+    let endDate = document.getElementById('endDate').value;
+    fetch(`/api/balance-sheet/?start_date=${startDate}&end_date=${endDate}`)
+        .then(response => response.json())
+        .then(data => {
+            let tbody = document.getElementById('balanceSheetBody');
+            tbody.innerHTML = '';
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" class="text-center">No data found</td></tr>';
+            } else {
+                data.forEach(item => {
+                    tbody.innerHTML += `<tr>
+                        <td>${item.account_name}</td>
+                        <td>${item.debit.toLocaleString()}</td>
+                        <td>${item.credit.toLocaleString()}</td>
+                    </tr>`;
+                });
+            }
+        })
+        .catch(error => console.error('Error:', error));
+});
+</script>
+{% endblock %}

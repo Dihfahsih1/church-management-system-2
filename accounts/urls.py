@@ -4,7 +4,7 @@ from .views import  create_account_type, delete_account_type, filter_expenditure
                     create_expenditure,retrieve_expenditure,update_expenditure,delete_expenditure, \
                     create_income_category, retrieve_income_category, update_income_category, delete_income_category, \
                     create_expenditure_category, retrieve_expenditure_category, update_expenditure_category, delete_expenditure_category, \
-                    register_user, login_user, logout_user
+                    register_user, login_user, logout_user, balance_sheet
 urlpatterns = [
     
     path('accounts/register/', register_user, name='register'),
@@ -54,6 +54,7 @@ urlpatterns = [
     path('api/income/', filter_income, name='filter_income'),
     path('api/expenditure/', filter_expenditure, name='filter_expenditure'),
 
-    path('get-payment-methods/', get_payment_methods, name="get_payment_methods")
+    path('get-payment-methods/', get_payment_methods, name="get_payment_methods"),
+    path('balance-sheet/', balance_sheet, name="balance_sheet"),
  
 ]
