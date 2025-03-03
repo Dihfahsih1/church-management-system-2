@@ -50,4 +50,7 @@ def add_income_form(request):
 def auth_view(request):
     return render(request, 'auth.html')
 
+def generate_balance_sheet(request):
+    return render(request,'balance_sheet.html')
+
 

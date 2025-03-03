@@ -112,6 +112,29 @@
                     <span class="badge badge-success"></span>
                 </a>
             </li>
+            <li class="nav-item">
+                <a data-toggle="collapse" href="#ReportsMenu">
+                    <i class="la la-users"></i>
+                    <p>Reports</p>
+                    <span class="caret"></span>
+                </a>
+                <div class="collapse" id="ReportsMenu">
+                    <ul class="nav">
+                        <li>
+                            <a href="{% url 'generate_balance_sheet' %}">
+                                <i class="la la-keyboard-o"></i>
+                                <span>Balance Sheet</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'generate_balance_sheet' %}">
+                                <i class="la la-th"></i>
+                                <span>Income Statement</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
            
             <!-- <li class="nav-item">
                 <a href="notifications.html">
