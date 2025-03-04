@@ -605,10 +605,11 @@ def balance_sheet(request):
                 "total_income": 0,
                 "total_expenditure": expenditure["total_expenditure"] or 0
             }
+    
 
     # Convert dictionary to list
     balance_sheet_data = list(account_data.values())
-
+    print(balance_sheet_data)
     # Calculate total income, total expenditure, and balance
     total_income = sum(item["total_income"] for item in balance_sheet_data)
     total_expenditure = sum(item["total_expenditure"] for item in balance_sheet_data)
@@ -622,12 +623,10 @@ def balance_sheet(request):
     expenditure_serializer = ExpenditureSerializer(expenditures, many=True)
 
     return Response({
-        "start_date": start_date,
-        "end_date": end_date,
-        "total_income": total_income,
-        "total_expenditure": total_expenditure,
-        "balance": balance,
-        "accounts": balance_sheet_data,  # Aggregated per account
-        "income_details": income_serializer.data,
-        "expenditure_details": expenditure_serializer.data
-    })
+    "start_date": start_date,
+    "end_date": end_date,
+    "total_income": total_income,
+    "total_expenditure": total_expenditure,
+    "balance": balance,
+    "income_details": balance_sheet_data  # Send aggregated data
+})

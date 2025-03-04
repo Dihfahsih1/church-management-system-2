@@ -70,24 +70,14 @@ function fetchBalanceSheet(startDate = null, endDate = null) {
             if (data.income_details.length === 0 && data.expenditure_details.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="3" class="text-center">No data found</td></tr>';
             } else {
-                data.income_details.forEach(item => {
-                    console.log(item.payment_method)
-                    tbody.innerHTML += `<tr>
-                        
-                        <td>${item.account}</td>
-                        <td>${item.amount.toLocaleString()}</td>
-                        <td>0</td>
-                    </tr>`;
-                });
-
-                data.expenditure_details.forEach(item => {
-                    onsole.log(item.payment_method)
-                    tbody.innerHTML += `<tr>
-                        <td>${item.account_name}</td>
-                        <td>0</td>
-                        <td>${item.amount.toLocaleString()}</td>
-                    </tr>`;
-                });
+                data.income_details.forEach(item => { 
+                tbody.innerHTML += `<tr>
+                    <td>${item.account}</td>
+                    <td>${item.total_income.toLocaleString()}</td>
+                    <td>${item.total_expenditure.toLocaleString()}</td>
+                </tr>`;
+            });
+ 
             }
         })
         .catch(error => console.error('Error:', error));
