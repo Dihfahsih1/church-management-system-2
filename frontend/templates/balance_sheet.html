@@ -1,13 +1,13 @@
 {% extends 'includes/base.html' %}
 {% load static %}
-{% block title %}UCC Bwaise | Balance Sheet {% endblock %}
+{% block title %}UCC Bwaise | Statement {% endblock %}
 
 {% block content %}
 
 <div class="main-panel">
     <div class="content">
         <div class="container-fluid">
-            <h2 class="text-center">Balance Sheet</h2>
+            <h2 class="text-center">Income Statement</h2>
             <form id="balanceSheetForm" class="row g-3">
                 <div class="col-md-4">
                     <label for="startDate" class="form-label">Start Date</label>
@@ -27,8 +27,8 @@
                     <thead class="table-dark">
                         <tr>
                             <th>Account</th>
-                            <th>Debit (UGX)</th>
-                            <th>Credit (UGX)</th>
+                            <th>Revenues (UGX)</th>
+                            <th>Expenses (UGX)</th>
                         </tr>
                     </thead>
                     <tbody id="balanceSheetBody">
@@ -77,6 +77,14 @@ function fetchBalanceSheet(startDate = null, endDate = null) {
                     <td>${item.total_expenditure.toLocaleString()}</td>
                 </tr>`;
             });
+            
+
+              // Add Net Profit/Loss Row
+              let balanceLabel = data.balance >= 0 ? "Net Profit/Loss" : "Net Loss";
+                tbody.innerHTML += `<tr class="fw-bold table-primary">
+                    <td>${balanceLabel}</td>
+                    <td colspan="2" class="text-end">${data.balance.toLocaleString()} UGX</td>
+                </tr>`;
  
             }
         })

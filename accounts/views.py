@@ -607,15 +607,13 @@ def balance_sheet(request):
             }
     
 
-    # Convert dictionary to list
     balance_sheet_data = list(account_data.values())
-    print(balance_sheet_data)
-    # Calculate total income, total expenditure, and balance
+    print(balance_sheet_data) 
+
     total_income = sum(item["total_income"] for item in balance_sheet_data)
     total_expenditure = sum(item["total_expenditure"] for item in balance_sheet_data)
     balance = total_income - total_expenditure
 
-    # Fetch full records for serialization
     incomes = Income.objects.filter(date__range=[start_date, end_date])
     expenditures = Expenditure.objects.filter(date__range=[start_date, end_date])
 
@@ -628,5 +626,5 @@ def balance_sheet(request):
     "total_income": total_income,
     "total_expenditure": total_expenditure,
     "balance": balance,
-    "income_details": balance_sheet_data  # Send aggregated data
+    "income_details": balance_sheet_data  
 })
