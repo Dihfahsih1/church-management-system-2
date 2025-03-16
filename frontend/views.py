@@ -40,45 +40,45 @@ def dashboard(request):
         .order_by('month')  # Order by month
     )
 
-    # Total counts
+    #Total counts
     total_accounts_types = AccountType.objects.count()
     total_accounts = Account.objects.count()
 
-    # Overall income and expenditure
+    #Overall income and expenditure
     overall_income = Income.objects.aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
     overall_expenditure = Expenditure.objects.aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
 
-    # Account balances
+    #Account balances
     account_balances = Account.objects.annotate(
         total_income=Sum('incomes__amount', default=0),
         total_expenditure=Sum('expenditures__amount', default=0),
     ).values('name', 'total_income', 'total_expenditure')
 
-    # Income breakdown by payment method
+    #Income breakdown by payment method
     income_by_payment_method = Income.objects.values('payment_method').annotate(total=Sum('amount'))
 
-    # Expenditure breakdown by payment method
+    #Expenditure breakdown by payment method
     expenditure_by_payment_method = Expenditure.objects.values('payment_method').annotate(total=Sum('amount'))
 
-    # Category-wise income summary
+    #Category-wise income summary
     income_by_category = IncomeCategory.objects.annotate(total=Sum('incomes__amount')).values('name', 'total')
 
-    # Category-wise expenditure summary
+    #Category-wise expenditure summary
     expenditure_by_category = ExpenditureCategory.objects.annotate(total=Sum('expenditures__amount')).values('name', 'total')
 
-    # Income and expenses grouped by account
+    #Income and expenses grouped by account
     account_income = (
         Account.objects
         .annotate(total_income=Sum('incomes__amount', default=0))
         .values('name', 'total_income')
-        .order_by('-total_income')  # Sort by highest income
+        .order_by('-total_income')   
     )
 
     account_expenses = (
         Account.objects
         .annotate(total_expenditure=Sum('expenditures__amount', default=0))
         .values('name', 'total_expenditure')
-        .order_by('-total_expenditure')  # Sort by highest expenses
+        .order_by('-total_expenditure')   
     )
 
     context = {
@@ -93,10 +93,10 @@ def dashboard(request):
         "expenditure_by_payment_method": list(expenditure_by_payment_method),
         "income_by_category": list(income_by_category),
         "expenditure_by_category": list(expenditure_by_category),
-        "monthly_income": list(monthly_income),  # Monthly income data
-        "monthly_expenses": list(monthly_expenses),  # Monthly expenses data
-        "account_income": list(account_income),  # Income grouped by account
-        "account_expenses": list(account_expenses),  # Expenses grouped by account
+        "monthly_income": list(monthly_income),  
+        "monthly_expenses": list(monthly_expenses),  
+        "account_income": list(account_income),  
+        "account_expenses": list(account_expenses),   
     }
 
     return render(request, 'dashboard.html', context)
